@@ -1,0 +1,150 @@
+<div class="trip-form">
+  <div class="header">
+    <h1>{{ isEditMode ? 'Editar Viagem' : 'Nova Viagem' }}</h1>
+    <button routerLink="/trips" class="btn btn-secondary">
+      ← Voltar
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <form [formGroup]="tripForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="vehicleId">Veículo *</label>
+        <select
+          id="vehicleId"
+          formControlName="vehicleId"
+          [class.invalid]="tripForm.get('vehicleId')?.invalid && tripForm.get('vehicleId')?.touched"
+        >
+          <option value="">Selecione um veículo...</option>
+          <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
+            {{ getVehicleLabel(vehicle) }}
+          </option>
+        </select>
+        <div class="error-message" *ngIf="tripForm.get('vehicleId')?.invalid && tripForm.get('vehicleId')?.touched">
+          Veículo é obrigatório
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="driverId">Motorista *</label>
+        <select
+          id="driverId"
+          formControlName="driverId"
+          [class.invalid]="tripForm.get('driverId')?.invalid && tripForm.get('driverId')?.touched"
+        >
+          <option value="">Selecione um motorista...</option>
+          <option *ngFor="let driver of drivers" [value]="driver.id">
+            {{ driver.name }} - CNH: {{ driver.cnh }}
+          </option>
+        </select>
+        <div class="error-message" *ngIf="tripForm.get('driverId')?.invalid && tripForm.get('driverId')?.touched">
+          Motorista é obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="origin">Origem *</label>
+        <input
+          type="text"
+          id="origin"
+          formControlName="origin"
+          placeholder="São Paulo, SP"
+          [class.invalid]="tripForm.get('origin')?.invalid && tripForm.get('origin')?.touched"
+        />
+        <div class="error-message" *ngIf="tripForm.get('origin')?.invalid && tripForm.get('origin')?.touched">
+          Origem é obrigatória
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="destination">Destino *</label>
+        <input
+          type="text"
+          id="destination"
+          formControlName="destination"
+          placeholder="Rio de Janeiro, RJ"
+          [class.invalid]="tripForm.get('destination')?.invalid && tripForm.get('destination')?.touched"
+        />
+        <div class="error-message" *ngIf="tripForm.get('destination')?.invalid && tripForm.get('destination')?.touched">
+          Destino é obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="startDateTime">Data/Hora de Início</label>
+        <input
+          type="datetime-local"
+          id="startDateTime"
+          formControlName="startDateTime"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="endDateTime">Data/Hora de Fim</label>
+        <input
+          type="datetime-local"
+          id="endDateTime"
+          formControlName="endDateTime"
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="startMileage">Quilometragem Inicial *</label>
+        <input
+          type="number"
+          id="startMileage"
+          formControlName="startMileage"
+          placeholder="10000"
+          [class.invalid]="tripForm.get('startMileage')?.invalid && tripForm.get('startMileage')?.touched"
+        />
+        <div class="error-message" *ngIf="tripForm.get('startMileage')?.invalid && tripForm.get('startMileage')?.touched">
+          Quilometragem inicial é obrigatória (mínimo 0)
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="endMileage">Quilometragem Final</label>
+        <input
+          type="number"
+          id="endMileage"
+          formControlName="endMileage"
+          placeholder="10450"
+          [class.invalid]="tripForm.get('endMileage')?.invalid && tripForm.get('endMileage')?.touched"
+        />
+        <div class="error-message" *ngIf="tripForm.get('endMileage')?.invalid && tripForm.get('endMileage')?.touched">
+          Quilometragem final deve ser maior que a inicial
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group full-width">
+        <label for="notes">Observações</label>
+        <textarea
+          id="notes"
+          formControlName="notes"
+          rows="4"
+          placeholder="Observações sobre a viagem..."
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" routerLink="/trips" class="btn btn-secondary">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        {{ isEditMode ? 'Atualizar' : 'Criar' }}
+      </button>
+    </div>
+  </form>
+</div>

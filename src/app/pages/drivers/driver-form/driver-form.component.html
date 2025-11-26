@@ -1,0 +1,116 @@
+<div class="driver-form">
+  <div class="header">
+    <h1>{{ isEditMode ? 'Editar Motorista' : 'Novo Motorista' }}</h1>
+    <button routerLink="/drivers" class="btn btn-secondary">
+      ← Voltar
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <form [formGroup]="driverForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="name">Nome Completo *</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          placeholder="João da Silva"
+          [class.invalid]="driverForm.get('name')?.invalid && driverForm.get('name')?.touched"
+        />
+        <div class="error-message" *ngIf="driverForm.get('name')?.invalid && driverForm.get('name')?.touched">
+          Nome é obrigatório
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cpf">CPF *</label>
+        <input
+          type="text"
+          id="cpf"
+          formControlName="cpf"
+          placeholder="12345678901"
+          maxlength="11"
+          [class.invalid]="driverForm.get('cpf')?.invalid && driverForm.get('cpf')?.touched"
+        />
+        <div class="error-message" *ngIf="driverForm.get('cpf')?.invalid && driverForm.get('cpf')?.touched">
+          CPF é obrigatório (11 dígitos)
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="cnh">CNH *</label>
+        <input
+          type="text"
+          id="cnh"
+          formControlName="cnh"
+          placeholder="12345678901"
+          [class.invalid]="driverForm.get('cnh')?.invalid && driverForm.get('cnh')?.touched"
+        />
+        <div class="error-message" *ngIf="driverForm.get('cnh')?.invalid && driverForm.get('cnh')?.touched">
+          CNH é obrigatória
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cnhCategory">Categoria CNH *</label>
+        <select
+          id="cnhCategory"
+          formControlName="cnhCategory"
+          [class.invalid]="driverForm.get('cnhCategory')?.invalid && driverForm.get('cnhCategory')?.touched"
+        >
+          <option value="">Selecione...</option>
+          <option value="A">A - Motocicleta</option>
+          <option value="B">B - Automóvel</option>
+          <option value="C">C - Caminhão</option>
+          <option value="D">D - Ônibus</option>
+          <option value="E">E - Veículos articulados</option>
+          <option value="AB">AB</option>
+          <option value="AC">AC</option>
+          <option value="AD">AD</option>
+          <option value="AE">AE</option>
+        </select>
+        <div class="error-message" *ngIf="driverForm.get('cnhCategory')?.invalid && driverForm.get('cnhCategory')?.touched">
+          Categoria CNH é obrigatória
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="cnhExpirationDate">Data de Vencimento da CNH *</label>
+        <input
+          type="date"
+          id="cnhExpirationDate"
+          formControlName="cnhExpirationDate"
+          [class.invalid]="driverForm.get('cnhExpirationDate')?.invalid && driverForm.get('cnhExpirationDate')?.touched"
+        />
+        <div class="error-message" *ngIf="driverForm.get('cnhExpirationDate')?.invalid && driverForm.get('cnhExpirationDate')?.touched">
+          Data de vencimento é obrigatória
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" formControlName="status">
+          <option *ngFor="let status of driverStatuses" [value]="status">
+            {{ getStatusLabel(status) }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" routerLink="/drivers" class="btn btn-secondary">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        {{ isEditMode ? 'Atualizar' : 'Criar' }}
+      </button>
+    </div>
+  </form>
+</div>

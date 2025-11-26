@@ -1,0 +1,149 @@
+<div class="trip-list">
+  <div class="header">
+    <h1>Viagens</h1>
+    <div class="header-actions">
+      <div class="filter-buttons">
+        <button 
+          (click)="filterTrips('all')" 
+          class="btn btn-sm"
+          [class.btn-primary]="filterType === 'all'"
+          [class.btn-outline]="filterType !== 'all'">
+          Todas
+        </button>
+        <button 
+          (click)="filterTrips('in-progress')" 
+          class="btn btn-sm"
+          [class.btn-primary]="filterType === 'in-progress'"
+          [class.btn-outline]="filterType !== 'in-progress'">
+          Em Andamento
+        </button>
+        <button 
+          (click)="filterTrips('completed')" 
+          class="btn btn-sm"
+          [class.btn-primary]="filterType === 'completed'"
+          [class.btn-outline]="filterType !== 'completed'">
+          Finalizadas
+        </button>
+      </div>
+      <button routerLink="/trips/new" class="btn btn-primary">
+        + Nova Viagem
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="table-container" *ngIf="!loading && !error">
+    <table>
+      <thead>
+        <tr>
+          <th>Origem</th>
+          <th>Destino</th>
+          <th>Veículo</th>
+          <th>Motorista</th>
+          <th>Início</th>
+          <th>Fim</th>
+          <th>Distância</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let trip of trips">
+          <td><strong>{{ trip.origin }}</strong></td>
+          <td><strong>{{ trip.destination }}</strong></td>
+          <td>{{ trip.vehicleId }}</td>
+          <td>{{ trip.driverId }}</td>
+          <td>{{ trip.startDateTime ? (trip.startDateTime | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
+          <td>{{ trip.endDateTime ? (trip.endDateTime | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
+          <td>
+            <span *ngIf="trip.distanceTraveled">{{ trip.distanceTraveled | number }} km</span>
+            <span *ngIf="!trip.distanceTraveled">-</span>
+          </td>
+          <td>
+            <span class="status" [ngClass]="getTripStatusClass(trip)">
+              {{ getTripStatus(trip) }}
+            </span>
+          </td>
+          <td class="actions">
+            <button 
+              *ngIf="canCompleteTrip(trip)"
+              (click)="openCompleteModal(trip)" 
+              class="btn btn-sm btn-success"
+              title="Finalizar Viagem">
+              ✓
+            </button>
+            <button 
+              [routerLink]="['/trips', trip.id, 'edit']" 
+              class="btn btn-sm btn-secondary"
+              title="Editar">
+              ✏️
+            </button>
+            <button 
+              (click)="deleteTrip(trip.id!)" 
+              class="btn btn-sm btn-danger"
+              title="Excluir">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="trips.length === 0">
+          <td colspan="9" class="text-center">Nenhuma viagem cadastrada</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal para Completar Viagem -->
+<div class="modal-overlay" *ngIf="showCompleteModal" (click)="closeCompleteModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Finalizar Viagem</h2>
+      <button class="close-btn" (click)="closeCompleteModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="trip-info" *ngIf="selectedTrip">
+        <p><strong>Origem:</strong> {{ selectedTrip.origin }}</p>
+        <p><strong>Destino:</strong> {{ selectedTrip.destination }}</p>
+        <p><strong>KM Inicial:</strong> {{ selectedTrip.startMileage | number }}</p>
+      </div>
+      
+      <div class="form-group">
+        <label for="endMileage">Quilometragem Final *</label>
+        <input 
+          type="number" 
+          id="endMileage"
+          [(ngModel)]="completeForm.endMileage"
+          [min]="selectedTrip?.startMileage || 0"
+          class="form-control"
+          required>
+        <small *ngIf="selectedTrip">
+          Distância: {{ (completeForm.endMileage - (selectedTrip.startMileage || 0)) | number }} km
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Observações</label>
+        <textarea 
+          id="notes"
+          [(ngModel)]="completeForm.notes"
+          class="form-control"
+          rows="3"
+          placeholder="Observações sobre a viagem (opcional)"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeCompleteModal()">
+        Cancelar
+      </button>
+      <button 
+        class="btn btn-primary" 
+        (click)="completeTrip()"
+        [disabled]="completeForm.endMileage <= (selectedTrip?.startMileage || 0)">
+        Finalizar Viagem
+      </button>
+    </div>
+  </div>
+</div>

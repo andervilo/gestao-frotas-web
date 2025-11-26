@@ -1,0 +1,60 @@
+<div class="vehicle-list">
+  <div class="header">
+    <h1>Veículos</h1>
+    <button routerLink="/vehicles/new" class="btn btn-primary">
+      + Novo Veículo
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="table-container" *ngIf="!loading && !error">
+    <table>
+      <thead>
+        <tr>
+          <th>Placa</th>
+          <th>Tipo</th>
+          <th>Marca</th>
+          <th>Modelo</th>
+          <th>Ano</th>
+          <th>Status</th>
+          <th>Km Atual</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let vehicle of vehicles">
+          <td><strong>{{ vehicle.licensePlate }}</strong></td>
+          <td>{{ getTypeLabel(vehicle.type) }}</td>
+          <td>{{ vehicle.brand }}</td>
+          <td>{{ vehicle.model }}</td>
+          <td>{{ vehicle.year }}</td>
+          <td>
+            <span class="status" [ngClass]="getStatusClass(vehicle.status)">
+              {{ getStatusLabel(vehicle.status) }}
+            </span>
+          </td>
+          <td>{{ vehicle.currentMileage | number }} km</td>
+          <td class="actions">
+            <button 
+              [routerLink]="['/vehicles', vehicle.id, 'edit']" 
+              class="btn btn-sm btn-secondary"
+              title="Editar">
+              ✏️
+            </button>
+            <button 
+              (click)="deleteVehicle(vehicle.id!)" 
+              class="btn btn-sm btn-danger"
+              title="Excluir">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="vehicles.length === 0">
+          <td colspan="8" class="text-center">Nenhum veículo cadastrado</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

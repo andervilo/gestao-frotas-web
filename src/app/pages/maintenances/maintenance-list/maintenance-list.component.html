@@ -1,0 +1,67 @@
+<div class="maintenance-list">
+  <div class="header">
+    <h1>Manutenções</h1>
+    <button routerLink="/maintenances/new" class="btn btn-primary">
+      + Nova Manutenção
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="table-container" *ngIf="!loading && !error">
+    <table>
+      <thead>
+        <tr>
+          <th>Veículo</th>
+          <th>Tipo</th>
+          <th>Descrição</th>
+          <th>Custo</th>
+          <th>Data Agendada</th>
+          <th>Data Início</th>
+          <th>Data Conclusão</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let maintenance of maintenances">
+          <td><strong>{{ maintenance.vehicleId }}</strong></td>
+          <td>
+            <span class="badge">{{ getTypeLabel(maintenance.type) }}</span>
+          </td>
+          <td>{{ maintenance.description }}</td>
+          <td>
+            <span *ngIf="maintenance.cost">R$ {{ maintenance.cost | number:'1.2-2' }}</span>
+            <span *ngIf="!maintenance.cost">-</span>
+          </td>
+          <td>{{ maintenance.scheduledDate | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ maintenance.startDate ? (maintenance.startDate | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
+          <td>{{ maintenance.completionDate ? (maintenance.completionDate | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
+          <td>
+            <span class="status" [ngClass]="getStatusClass(maintenance.status)">
+              {{ getStatusLabel(maintenance.status) }}
+            </span>
+          </td>
+          <td class="actions">
+            <button 
+              [routerLink]="['/maintenances', maintenance.id, 'edit']" 
+              class="btn btn-sm btn-secondary"
+              title="Editar">
+              ✏️
+            </button>
+            <button 
+              (click)="deleteMaintenance(maintenance.id!)" 
+              class="btn btn-sm btn-danger"
+              title="Excluir">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="maintenances.length === 0">
+          <td colspan="9" class="text-center">Nenhuma manutenção cadastrada</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

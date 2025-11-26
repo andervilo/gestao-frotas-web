@@ -1,0 +1,126 @@
+<div class="vehicle-form">
+  <div class="header">
+    <h1>{{ isEditMode ? 'Editar Veículo' : 'Novo Veículo' }}</h1>
+    <button routerLink="/vehicles" class="btn btn-secondary">
+      ← Voltar
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="licensePlate">Placa *</label>
+        <input
+          type="text"
+          id="licensePlate"
+          formControlName="licensePlate"
+          placeholder="ABC-1234"
+          [class.invalid]="vehicleForm.get('licensePlate')?.invalid && vehicleForm.get('licensePlate')?.touched"
+        />
+        <div class="error-message" *ngIf="vehicleForm.get('licensePlate')?.invalid && vehicleForm.get('licensePlate')?.touched">
+          Placa é obrigatória
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="type">Tipo *</label>
+        <select
+          id="type"
+          formControlName="type"
+          [class.invalid]="vehicleForm.get('type')?.invalid && vehicleForm.get('type')?.touched"
+        >
+          <option value="">Selecione...</option>
+          <option *ngFor="let type of vehicleTypes" [value]="type">
+            {{ getTypeLabel(type) }}
+          </option>
+        </select>
+        <div class="error-message" *ngIf="vehicleForm.get('type')?.invalid && vehicleForm.get('type')?.touched">
+          Tipo é obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="brand">Marca *</label>
+        <input
+          type="text"
+          id="brand"
+          formControlName="brand"
+          placeholder="Toyota"
+          [class.invalid]="vehicleForm.get('brand')?.invalid && vehicleForm.get('brand')?.touched"
+        />
+        <div class="error-message" *ngIf="vehicleForm.get('brand')?.invalid && vehicleForm.get('brand')?.touched">
+          Marca é obrigatória
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="model">Modelo *</label>
+        <input
+          type="text"
+          id="model"
+          formControlName="model"
+          placeholder="Corolla"
+          [class.invalid]="vehicleForm.get('model')?.invalid && vehicleForm.get('model')?.touched"
+        />
+        <div class="error-message" *ngIf="vehicleForm.get('model')?.invalid && vehicleForm.get('model')?.touched">
+          Modelo é obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="year">Ano *</label>
+        <input
+          type="number"
+          id="year"
+          formControlName="year"
+          placeholder="2023"
+          [class.invalid]="vehicleForm.get('year')?.invalid && vehicleForm.get('year')?.touched"
+        />
+        <div class="error-message" *ngIf="vehicleForm.get('year')?.invalid && vehicleForm.get('year')?.touched">
+          Ano válido é obrigatório (mínimo 1900)
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="currentMileage">Quilometragem Atual *</label>
+        <input
+          type="number"
+          id="currentMileage"
+          formControlName="currentMileage"
+          placeholder="50000"
+          [class.invalid]="vehicleForm.get('currentMileage')?.invalid && vehicleForm.get('currentMileage')?.touched"
+        />
+        <div class="error-message" *ngIf="vehicleForm.get('currentMileage')?.invalid && vehicleForm.get('currentMileage')?.touched">
+          Quilometragem deve ser maior ou igual a zero
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" formControlName="status">
+          <option *ngFor="let status of vehicleStatuses" [value]="status">
+            {{ getStatusLabel(status) }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" routerLink="/vehicles" class="btn btn-secondary">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        {{ isEditMode ? 'Atualizar' : 'Criar' }}
+      </button>
+    </div>
+  </form>
+</div>

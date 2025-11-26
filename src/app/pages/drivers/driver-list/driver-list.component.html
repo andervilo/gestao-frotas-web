@@ -1,0 +1,63 @@
+<div class="driver-list">
+  <div class="header">
+    <h1>Motoristas</h1>
+    <button routerLink="/drivers/new" class="btn btn-primary">
+      + Novo Motorista
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="table-container" *ngIf="!loading && !error">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>CNH</th>
+          <th>Categoria</th>
+          <th>Vencimento CNH</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let driver of drivers">
+          <td><strong>{{ driver.name }}</strong></td>
+          <td>{{ driver.cpf }}</td>
+          <td>{{ driver.cnh }}</td>
+          <td><span class="badge">{{ driver.cnhCategory }}</span></td>
+          <td>
+            <span [class.expired]="isCnhExpired(driver.cnhExpirationDate)">
+              {{ driver.cnhExpirationDate | date:'dd/MM/yyyy' }}
+            </span>
+            <span class="warning" *ngIf="isCnhExpired(driver.cnhExpirationDate)">⚠️</span>
+          </td>
+          <td>
+            <span class="status" [ngClass]="getStatusClass(driver.status)">
+              {{ getStatusLabel(driver.status) }}
+            </span>
+          </td>
+          <td class="actions">
+            <button 
+              [routerLink]="['/drivers', driver.id, 'edit']" 
+              class="btn btn-sm btn-secondary"
+              title="Editar">
+              ✏️
+            </button>
+            <button 
+              (click)="deleteDriver(driver.id!)" 
+              class="btn btn-sm btn-danger"
+              title="Excluir">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="drivers.length === 0">
+          <td colspan="7" class="text-center">Nenhum motorista cadastrado</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
