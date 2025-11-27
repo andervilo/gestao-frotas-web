@@ -1,0 +1,122 @@
+<div class="cost-report">
+  <div class="header">
+    <h1><i class="fas fa-chart-bar"></i> Relatório de Custos Operacionais</h1>
+    <div class="filters">
+      <div class="form-group">
+        <label>Data Início:</label>
+        <input type="date" [(ngModel)]="startDate" class="form-control">
+      </div>
+      
+      <div class="form-group">
+        <label>Data Fim:</label>
+        <input type="date" [(ngModel)]="endDate" class="form-control">
+      </div>
+      
+      <button (click)="loadReport()" class="btn btn-primary">
+        <i class="fas fa-search"></i> Gerar Relatório
+      </button>
+      
+      <button (click)="exportExcel()" class="btn btn-success" [disabled]="!report">
+        <i class="fas fa-file-excel"></i> Excel
+      </button>
+      
+      <button (click)="exportPDF()" class="btn btn-danger" [disabled]="!report">
+        <i class="fas fa-file-pdf"></i> PDF
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">Carregando relatório...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="report && !loading" class="report-content">
+    <!-- Cards de Resumo -->
+    <div class="summary-cards">
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-dollar-sign"></i></div>
+        <div class="card-content">
+          <div class="card-label">Custo Total</div>
+          <div class="card-value">R$ {{ report.totalCost | number:'1.2-2' }}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-tools"></i></div>
+        <div class="card-content">
+          <div class="card-label">Custo Manutenção</div>
+          <div class="card-value">R$ {{ report.totalMaintenance | number:'1.2-2' }}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-car"></i></div>
+        <div class="card-content">
+          <div class="card-label">Média por Veículo</div>
+          <div class="card-value">R$ {{ report.averageCostPerVehicle | number:'1.2-2' }}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-road"></i></div>
+        <div class="card-content">
+          <div class="card-label">Custo por KM</div>
+          <div class="card-value">R$ {{ report.averageCostPerKm | number:'1.4-4' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela de Custos por Veículo -->
+    <div class="section">
+      <h2>Custos por Veículo</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Placa</th>
+              <th>Marca</th>
+              <th>Modelo</th>
+              <th>Custo Total</th>
+              <th>Custo Manutenção</th>
+              <th>KM Total</th>
+              <th>Custo/KM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let vehicle of report.vehicleCosts">
+              <td><strong>{{ vehicle.licensePlate }}</strong></td>
+              <td>{{ vehicle.brand }}</td>
+              <td>{{ vehicle.model }}</td>
+              <td>R$ {{ vehicle.totalCost | number:'1.2-2' }}</td>
+              <td>R$ {{ vehicle.maintenanceCost | number:'1.2-2' }}</td>
+              <td>{{ vehicle.totalKm | number }}</td>
+              <td>R$ {{ vehicle.costPerKm | number:'1.4-4' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Custos Mensais -->
+    <div class="section">
+      <h2>Evolução Mensal de Custos</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Custo Total</th>
+              <th>Custo Manutenção</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let monthly of report.monthlyCosts">
+              <td><strong>{{ monthly.month }}</strong></td>
+              <td>R$ {{ monthly.totalCost | number:'1.2-2' }}</td>
+              <td>R$ {{ monthly.maintenanceCost | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -115,3 +115,42 @@ input, select, textarea {
 .mb-1 { margin-bottom: 0.5rem; }
 .mb-2 { margin-bottom: 1rem; }
 .mb-3 { margin-bottom: 1.5rem; }
+
+/* Font Awesome Icon Styles */
+i.fas, i.far, i.fab {
+  margin-right: 6px;
+  
+  &:only-child {
+    margin-right: 0;
+  }
+}
+
+/* Icon spacing in buttons */
+.btn i {
+  margin-right: 6px;
+  
+  &:only-child {
+    margin-right: 0;
+  }
+}
+
+/* Icon sizing helpers */
+.icon-sm {
+  font-size: 0.875em;
+}
+
+.icon-lg {
+  font-size: 1.25em;
+}
+
+.icon-xl {
+  font-size: 1.5em;
+}
+
+/* Icon colors */
+.icon-primary { color: #2196F3; }
+.icon-success { color: #4CAF50; }
+.icon-danger { color: #f44336; }
+.icon-warning { color: #ff9800; }
+.icon-info { color: #00bcd4; }
+

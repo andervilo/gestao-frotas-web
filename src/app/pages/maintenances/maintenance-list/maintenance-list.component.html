@@ -54,11 +54,11 @@
           (click)="clearFilters()" 
           class="btn btn-sm btn-outline"
           title="Limpar Filtros">
-          ✕
+          <i class="fas fa-times"></i>
         </button>
       </div>
       <button routerLink="/maintenances/new" class="btn btn-primary">
-        + Nova Manutenção
+        <i class="fas fa-plus"></i> Nova Manutenção
       </button>
     </div>
   </div>
@@ -106,33 +106,33 @@
               (click)="openActionModal('start', maintenance)" 
               class="btn btn-sm btn-primary"
               title="Iniciar Manutenção">
-              ▶️
+              <i class="fas fa-play"></i>
             </button>
             <button 
               *ngIf="canComplete(maintenance)"
               (click)="openActionModal('complete', maintenance)" 
               class="btn btn-sm btn-success"
               title="Concluir Manutenção">
-              ✓
+              <i class="fas fa-check"></i>
             </button>
             <button 
               *ngIf="canCancel(maintenance)"
               (click)="openActionModal('cancel', maintenance)" 
               class="btn btn-sm btn-danger"
               title="Cancelar Manutenção">
-              ✕
+              <i class="fas fa-times"></i>
             </button>
             <button 
               [routerLink]="['/maintenances', maintenance.id, 'edit']" 
               class="btn btn-sm btn-secondary"
               title="Editar">
-              ✏️
+              <i class="fas fa-edit"></i>
             </button>
             <button 
               (click)="deleteMaintenance(maintenance.id!)" 
               class="btn btn-sm btn-danger"
               title="Excluir">
-              🗑️
+              <i class="fas fa-trash"></i>
             </button>
           </td>
         </tr>

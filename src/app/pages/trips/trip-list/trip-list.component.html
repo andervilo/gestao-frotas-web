@@ -35,11 +35,11 @@
           (click)="clearFilters()" 
           class="btn btn-sm btn-outline"
           title="Limpar Filtros">
-          ✕
+          <i class="fas fa-times"></i>
         </button>
       </div>
       <button routerLink="/trips/new" class="btn btn-primary">
-        + Nova Viagem
+        <i class="fas fa-plus"></i> Nova Viagem
       </button>
     </div>
   </div>
@@ -85,19 +85,19 @@
               (click)="openCompleteModal(trip)" 
               class="btn btn-sm btn-success"
               title="Finalizar Viagem">
-              ✓
+              <i class="fas fa-check"></i>
             </button>
             <button 
               [routerLink]="['/trips', trip.id, 'edit']" 
               class="btn btn-sm btn-secondary"
               title="Editar">
-              ✏️
+              <i class="fas fa-edit"></i>
             </button>
             <button 
               (click)="deleteTrip(trip.id!)" 
               class="btn btn-sm btn-danger"
               title="Excluir">
-              🗑️
+              <i class="fas fa-trash"></i>
             </button>
           </td>
         </tr>

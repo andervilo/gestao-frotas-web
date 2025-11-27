@@ -71,6 +71,21 @@
   nav {
     padding: 20px 0;
 
+    .nav-divider {
+      height: 1px;
+      background: #37474F;
+      margin: 15px 20px;
+    }
+
+    .nav-section-title {
+      padding: 10px 20px;
+      color: #78909C;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
     .nav-item {
       display: flex;
       align-items: center;
@@ -90,6 +105,11 @@
         background: #37474F;
         color: #2196F3;
         border-left: 4px solid #2196F3;
+      }
+
+      &.nav-sub-item {
+        padding-left: 35px;
+        font-size: 14px;
       }
     }
   }

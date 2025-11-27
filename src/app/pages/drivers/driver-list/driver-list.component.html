@@ -2,7 +2,7 @@
   <div class="header">
     <h1>Motoristas</h1>
     <button routerLink="/drivers/new" class="btn btn-primary">
-      + Novo Motorista
+      <i class="fas fa-plus"></i> Novo Motorista
     </button>
   </div>
 
@@ -32,7 +32,9 @@
             <span [class.expired]="isCnhExpired(driver.cnhExpirationDate)">
               {{ driver.cnhExpirationDate | date:'dd/MM/yyyy' }}
             </span>
-            <span class="warning" *ngIf="isCnhExpired(driver.cnhExpirationDate)">⚠️</span>
+            <span class="warning" *ngIf="isCnhExpired(driver.cnhExpirationDate)">
+              <i class="fas fa-exclamation-triangle"></i>
+            </span>
           </td>
           <td>
             <span class="status" [ngClass]="getStatusClass(driver.status)">
@@ -44,13 +46,13 @@
               [routerLink]="['/drivers', driver.id, 'edit']" 
               class="btn btn-sm btn-secondary"
               title="Editar">
-              ✏️
+              <i class="fas fa-edit"></i>
             </button>
             <button 
               (click)="deleteDriver(driver.id!)" 
               class="btn btn-sm btn-danger"
               title="Excluir">
-              🗑️
+              <i class="fas fa-trash"></i>
             </button>
           </td>
         </tr>

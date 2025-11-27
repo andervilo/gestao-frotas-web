@@ -2,7 +2,7 @@
   <header class="header">
     <div class="header-content">
       <button class="menu-toggle" (click)="toggleMenu()">
-        ☰
+        <i class="fas fa-bars"></i>
       </button>
       <h1>{{ title }}</h1>
     </div>
@@ -12,19 +12,41 @@
     <aside class="sidebar">
       <nav>
         <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-          🏠 Dashboard
+          <i class="fas fa-home"></i> Dashboard
         </a>
         <a routerLink="/vehicles" routerLinkActive="active" class="nav-item">
-          🚗 Veículos
+          <i class="fas fa-car"></i> Veículos
         </a>
         <a routerLink="/drivers" routerLinkActive="active" class="nav-item">
-          👤 Motoristas
+          <i class="fas fa-user"></i> Motoristas
         </a>
         <a routerLink="/trips" routerLinkActive="active" class="nav-item">
-          🗺️ Viagens
+          <i class="fas fa-route"></i> Viagens
         </a>
         <a routerLink="/maintenances" routerLinkActive="active" class="nav-item">
-          🔧 Manutenções
+          <i class="fas fa-tools"></i> Manutenções
+        </a>
+        
+        <div class="nav-divider"></div>
+        <div class="nav-section-title"><i class="fas fa-chart-bar"></i> Relatórios</div>
+        
+        <a routerLink="/reports/costs" routerLinkActive="active" class="nav-item nav-sub-item">
+          <i class="fas fa-dollar-sign"></i> Custos Operacionais
+        </a>
+        <a routerLink="/reports/fleet-utilization" routerLinkActive="active" class="nav-item nav-sub-item">
+          <i class="fas fa-chart-line"></i> Utilização de Frota
+        </a>
+        <a routerLink="/reports/maintenance" routerLinkActive="active" class="nav-item nav-sub-item">
+          <i class="fas fa-clipboard-list"></i> Manutenção Preventiva
+        </a>
+        <a routerLink="/reports/driver-performance" routerLinkActive="active" class="nav-item nav-sub-item">
+          <i class="fas fa-user-tie"></i> Desempenho de Motoristas
+        </a>
+        <a routerLink="/reports/trips" routerLinkActive="active" class="nav-item nav-sub-item">
+          <i class="fas fa-map-marked-alt"></i> Relatório de Viagens
+        </a>
+        <a routerLink="/reports/depreciation" routerLinkActive="active" class="nav-item nav-sub-item">
+          <i class="fas fa-chart-line-down"></i> Depreciação de Veículos
         </a>
       </nav>
     </aside>

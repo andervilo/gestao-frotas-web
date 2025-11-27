@@ -1,0 +1,132 @@
+<div class="driver-performance-report">
+  <div class="header">
+    <h1><i class="fas fa-user-tie"></i> Relatório de Desempenho de Motoristas</h1>
+    <div class="filters">
+      <div class="form-group">
+        <label>Data Início:</label>
+        <input type="date" id="startDate" [(ngModel)]="startDate" class="form-control" />
+      </div>
+      
+      <div class="form-group">
+        <label>Data Fim:</label>
+        <input type="date" id="endDate" [(ngModel)]="endDate" class="form-control" />
+      </div>
+      
+      <button (click)="generateReport()" class="btn btn-primary">
+        <i class="fas fa-search"></i> Gerar Relatório
+      </button>
+      
+      <button (click)="exportToExcel()" class="btn btn-success" [disabled]="!report">
+        <i class="fas fa-file-excel"></i> Excel
+      </button>
+      
+      <button (click)="exportToPDF()" class="btn btn-danger" [disabled]="!report">
+        <i class="fas fa-file-pdf"></i> PDF
+      </button>
+    </div>
+  </div>
+  
+  <div *ngIf="loading" class="loading">Carregando relatório...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  
+  <div *ngIf="report && !loading" class="report-content">
+    <!-- Cards de Resumo -->
+    <div class="summary-cards">
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-users"></i></div>
+        <div class="card-content">
+          <div class="card-label">Total de Motoristas</div>
+          <div class="card-value">{{ report.totalDrivers || 0 }}</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-user-check"></i></div>
+        <div class="card-content">
+          <div class="card-label">Motoristas Ativos</div>
+          <div class="card-value">{{ report.activeDrivers || 0 }}</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-id-card"></i></div>
+        <div class="card-content">
+          <div class="card-label">CNHs Expirando</div>
+          <div class="card-value">{{ report.cnhExpiring.length || 0 }}</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+        <div class="card-content">
+          <div class="card-label">Estatísticas Disponíveis</div>
+          <div class="card-value">{{ report.driverStats.length || 0 }}</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CNHs Próximas do Vencimento -->
+    <div class="section" *ngIf="report.cnhExpiring && report.cnhExpiring.length > 0">
+      <h2><i class="fas fa-exclamation-triangle"></i> CNHs Próximas do Vencimento ({{ report.cnhExpiring.length }})</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Motorista</th>
+              <th>CNH</th>
+              <th>Data de Vencimento</th>
+              <th>Dias até Vencer</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let driver of report.cnhExpiring">
+              <td><strong>{{ driver.name }}</strong></td>
+              <td>{{ driver.cnh }}</td>
+              <td>{{ driver.cnhExpiration | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ driver.daysUntilExpiration }} dias</td>
+              <td>
+                <span class="badge" [ngClass]="getStatusClass(driver.status)">
+                  {{ driver.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Estatísticas de Desempenho -->
+    <div class="section" *ngIf="report.driverStats && report.driverStats.length > 0">
+      <h2><i class="fas fa-chart-line"></i> Estatísticas de Desempenho ({{ report.driverStats.length }})</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Motorista</th>
+              <th>CNH</th>
+              <th>Total Viagens</th>
+              <th>Total Km</th>
+              <th>Taxa de Utilização</th>
+              <th>Ranking</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let driver of report.driverStats">
+              <td><strong>{{ driver.name }}</strong></td>
+              <td>{{ driver.cnh }}</td>
+              <td>{{ driver.totalTrips }}</td>
+              <td>{{ driver.totalKm.toLocaleString('pt-BR') }}</td>
+              <td>{{ driver.utilizationRate.toFixed(2) }}%</td>
+              <td>
+                <span class="badge" [ngClass]="getRankingClass(driver.ranking)">
+                  #{{ driver.ranking }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

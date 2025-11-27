@@ -1,0 +1,124 @@
+<div class="trip-report">
+  <div class="header">
+    <h1><i class="fas fa-map-marked-alt"></i> Relatório de Viagens</h1>
+    
+    <div class="filters">
+      <div class="form-group">
+        <label for="startDate">Data Inicial:</label>
+        <input type="date" id="startDate" class="form-control" [(ngModel)]="startDate" />
+      </div>
+      <div class="form-group">
+        <label for="endDate">Data Final:</label>
+        <input type="date" id="endDate" class="form-control" [(ngModel)]="endDate" />
+      </div>
+      <button class="btn btn-primary" (click)="generateReport()">
+        <i class="fas fa-search"></i> Gerar Relatório
+      </button>
+      <button class="btn btn-success" *ngIf="report" (click)="exportToExcel()">
+        <i class="fas fa-file-excel"></i> Exportar Excel
+      </button>
+      <button class="btn btn-danger" *ngIf="report" (click)="exportToPDF()">
+        <i class="fas fa-file-pdf"></i> Exportar PDF
+      </button>
+    </div>
+  </div>
+  
+  <div class="loading" *ngIf="loading">Carregando relatório...</div>
+  <div class="error" *ngIf="error">{{ error }}</div>
+  
+  <div class="report-content" *ngIf="report && !loading">
+    <div class="summary-cards">
+      <div class="card">
+        <div class="card-icon">
+          <i class="fas fa-route"></i>
+        </div>
+        <div class="card-content">
+          <div class="card-label">Total de Viagens</div>
+          <div class="card-value">{{ report.totalTrips || 0 }}</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <i class="fas fa-road"></i>
+        </div>
+        <div class="card-content">
+          <div class="card-label">Distância Total</div>
+          <div class="card-value">{{ (report.totalKm || 0).toLocaleString('pt-BR') }} km</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <i class="fas fa-tachometer-alt"></i>
+        </div>
+        <div class="card-content">
+          <div class="card-label">Distância Média</div>
+          <div class="card-value">{{ (report.averageDistance || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2}) }} km</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <i class="fas fa-map-marker-alt"></i>
+        </div>
+        <div class="card-content">
+          <div class="card-label">Rotas Frequentes</div>
+          <div class="card-value">{{ report.topRoutes.length || 0 }}</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="card-content">
+          <div class="card-label">Status Variados</div>
+          <div class="card-value">{{ getStatusKeys().length }}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section" *ngIf="report.topRoutes && report.topRoutes.length > 0">
+      <h2><i class="fas fa-map-marker-alt"></i> Rotas Mais Frequentes ({{ report.topRoutes.length }})</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Origem</th>
+              <th>Destino</th>
+              <th>Nº Viagens</th>
+              <th>Distância Total (km)</th>
+              <th>Distância Média (km)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let route of report.topRoutes">
+              <td><strong>{{ route.origin }}</strong></td>
+              <td><strong>{{ route.destination }}</strong></td>
+              <td>{{ route.tripCount }}</td>
+              <td>{{ route.totalKm.toLocaleString('pt-BR') }}</td>
+              <td>{{ route.averageKm.toLocaleString('pt-BR') }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2><i class="fas fa-chart-bar"></i> Viagens por Status</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Quantidade</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let status of getStatusKeys()">
+              <td><strong>{{ translateStatus(status) }}</strong></td>
+              <td>{{ report.tripsByStatus[status] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

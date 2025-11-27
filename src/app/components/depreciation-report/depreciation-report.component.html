@@ -1,0 +1,68 @@
+<div class="report-container">
+  <h2><i class="fas fa-chart-line-down"></i> Relatório de Depreciação de Veículos</h2>
+  
+  <div class="actions">
+    <button class="btn-primary" (click)="generateReport()"><i class="fas fa-sync"></i> Atualizar Relatório</button>
+    <div class="export-buttons" *ngIf="report">
+      <button class="btn-secondary" (click)="exportToExcel()"><i class="fas fa-file-excel"></i> Exportar Excel</button>
+      <button class="btn-secondary" (click)="exportToPDF()"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
+    </div>
+  </div>
+  
+  <div class="loading" *ngIf="loading"><p>Carregando relatório...</p></div>
+  <div class="error" *ngIf="error"><p>{{ error }}</p></div>
+  
+  <div class="report-content" *ngIf="report && !loading">
+    <div class="summary-cards">
+      <div class="summary-card">
+        <h3>Valor Total da Frota</h3>
+        <p class="value">R$ {{ report.totalFleetValue.toLocaleString('pt-BR', {minimumFractionDigits: 2}) }}</p>
+      </div>
+      <div class="summary-card">
+        <h3>Depreciação Total</h3>
+        <p class="value">R$ {{ report.totalDepreciation.toLocaleString('pt-BR', {minimumFractionDigits: 2}) }}</p>
+      </div>
+      <div class="summary-card">
+        <h3>Idade Média da Frota</h3>
+        <p class="value">{{ report.averageFleetAge }} anos</p>
+      </div>
+      <div class="summary-card">
+        <h3>Total de Veículos</h3>
+        <p class="value">{{ report.vehicleDepreciation.length }}</p>
+      </div>
+    </div>
+    
+    <div class="table-section">
+      <h3><i class="fas fa-car"></i> Depreciação por Veículo ({{ report.vehicleDepreciation.length }})</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Veículo</th>
+            <th>Ano</th>
+            <th>Idade (anos)</th>
+            <th>Data Compra</th>
+            <th>Valor Compra</th>
+            <th>Valor Atual</th>
+            <th>Depreciação</th>
+            <th>Taxa (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let vehicle of report.vehicleDepreciation">
+            <td>
+              <strong>{{ vehicle.brand }} {{ vehicle.model }}</strong><br>
+              <small>{{ vehicle.licensePlate }}</small>
+            </td>
+            <td>{{ vehicle.year }}</td>
+            <td>{{ vehicle.ageInYears }}</td>
+            <td>{{ vehicle.purchaseDate | date: 'dd/MM/yyyy' }}</td>
+            <td>R$ {{ vehicle.purchaseValue.toLocaleString('pt-BR', {minimumFractionDigits: 2}) }}</td>
+            <td>R$ {{ vehicle.currentValue.toLocaleString('pt-BR', {minimumFractionDigits: 2}) }}</td>
+            <td>R$ {{ vehicle.totalDepreciation.toLocaleString('pt-BR', {minimumFractionDigits: 2}) }}</td>
+            <td>{{ vehicle.depreciationRate.toFixed(2) }}%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

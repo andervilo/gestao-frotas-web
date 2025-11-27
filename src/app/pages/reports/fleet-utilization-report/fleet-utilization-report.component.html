@@ -1,0 +1,134 @@
+<div class="fleet-utilization-report">
+  <div class="header">
+    <h1><i class="fas fa-chart-line"></i> Relatório de Utilização de Frota</h1>
+    <div class="filters">
+      <div class="form-group">
+        <label>Data Início:</label>
+        <input type="date" [(ngModel)]="startDate" class="form-control">
+      </div>
+      
+      <div class="form-group">
+        <label>Data Fim:</label>
+        <input type="date" [(ngModel)]="endDate" class="form-control">
+      </div>
+      
+      <button (click)="loadReport()" class="btn btn-primary">
+        <i class="fas fa-search"></i> Gerar Relatório
+      </button>
+      
+      <button (click)="exportExcel()" class="btn btn-success" [disabled]="!report">
+        <i class="fas fa-file-excel"></i> Excel
+      </button>
+      
+      <button (click)="exportPDF()" class="btn btn-danger" [disabled]="!report">
+        <i class="fas fa-file-pdf"></i> PDF
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">Carregando relatório...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="report && !loading" class="report-content">
+    <!-- Cards de Resumo -->
+    <div class="summary-cards">
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-car"></i></div>
+        <div class="card-content">
+          <div class="card-label">Total de Veículos</div>
+          <div class="card-value">{{ report.totalVehicles }}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="card-content">
+          <div class="card-label">Veículos Ativos</div>
+          <div class="card-value">{{ report.activeVehicles }}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-pause-circle"></i></div>
+        <div class="card-content">
+          <div class="card-label">Veículos Ociosos</div>
+          <div class="card-value">{{ report.idleVehicles }}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+        <div class="card-content">
+          <div class="card-label">Taxa Média Utilização</div>
+          <div class="card-value">{{ report.averageUtilizationRate | number:'1.1-1' }}%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela de Utilização -->
+    <div class="section">
+      <h2>Utilização por Veículo</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Placa</th>
+              <th>Marca/Modelo</th>
+              <th>Viagens</th>
+              <th>KM Total</th>
+              <th>Dias em Uso</th>
+              <th>Dias Parado</th>
+              <th>Taxa Utilização</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let vehicle of report.vehicleUtilization">
+              <td><strong>{{ vehicle.licensePlate }}</strong></td>
+              <td>{{ vehicle.brand }} {{ vehicle.model }}</td>
+              <td>{{ vehicle.totalTrips }}</td>
+              <td>{{ vehicle.totalKm | number }}</td>
+              <td>{{ vehicle.daysInUse }}</td>
+              <td>{{ vehicle.daysIdle }}</td>
+              <td>{{ vehicle.utilizationRate | number:'1.1-1' }}%</td>
+              <td>
+                <span class="badge" [ngClass]="getStatusClass(vehicle.utilizationStatus)">
+                  {{ vehicle.utilizationStatus }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Veículos Ociosos -->
+    <div class="section" *ngIf="report.idleVehiclesList.length > 0">
+      <h2>⚠️ Veículos Ociosos (Mais de 30 dias parados)</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Placa</th>
+              <th>Marca/Modelo</th>
+              <th>Dias Parado</th>
+              <th>Última Viagem</th>
+              <th>Sugestão</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let vehicle of report.idleVehiclesList">
+              <td><strong>{{ vehicle.licensePlate }}</strong></td>
+              <td>{{ vehicle.brand }} {{ vehicle.model }}</td>
+              <td>{{ vehicle.daysIdle }} dias</td>
+              <td>{{ vehicle.lastTripDate || 'Nunca' }}</td>
+              <td>
+                <span class="badge badge-warning">{{ vehicle.suggestion }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

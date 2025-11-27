@@ -2,7 +2,7 @@
   <div class="header">
     <h1>Veículos</h1>
     <button routerLink="/vehicles/new" class="btn btn-primary">
-      + Novo Veículo
+      <i class="fas fa-plus"></i> Novo Veículo
     </button>
   </div>
 
@@ -41,13 +41,13 @@
               [routerLink]="['/vehicles', vehicle.id, 'edit']" 
               class="btn btn-sm btn-secondary"
               title="Editar">
-              ✏️
+              <i class="fas fa-edit"></i>
             </button>
             <button 
               (click)="deleteVehicle(vehicle.id!)" 
               class="btn btn-sm btn-danger"
               title="Excluir">
-              🗑️
+              <i class="fas fa-trash"></i>
             </button>
           </td>
         </tr>
