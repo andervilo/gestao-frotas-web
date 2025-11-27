@@ -7,7 +7,7 @@ import { VehicleService } from '../../../services/vehicle.service';
 import { DriverService } from '../../../services/driver.service';
 import { Trip } from '../../../models/trip.model';
 import { Vehicle } from '../../../models/vehicle.model';
-import { Driver } from '../../../models/driver.model';
+import { Driver, PagedResponse } from '../../../models/driver.model';
 
 @Component({
   selector: 'app-trip-form',
@@ -72,8 +72,8 @@ export class TripFormComponent implements OnInit {
 
   loadDrivers(): void {
     this.driverService.getAll().subscribe({
-      next: (data: Driver[]) => {
-        this.drivers = data;
+      next: (response: PagedResponse<Driver>) => {
+        this.drivers = response.content;
       },
       error: (err: any) => {
         console.error('Erro ao carregar motoristas', err);

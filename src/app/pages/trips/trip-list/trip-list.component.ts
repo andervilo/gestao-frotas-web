@@ -6,7 +6,7 @@ import { Trip } from '../../../models/trip.model';
 import { TripService } from '../../../services/trip.service';
 import { Vehicle } from '../../../models/vehicle.model';
 import { VehicleService } from '../../../services/vehicle.service';
-import { Driver } from '../../../models/driver.model';
+import { Driver, PagedResponse } from '../../../models/driver.model';
 import { DriverService } from '../../../services/driver.service';
 
 @Component({
@@ -58,8 +58,8 @@ export class TripListComponent implements OnInit {
 
   loadDrivers(): void {
     this.driverService.getAll().subscribe({
-      next: (data: Driver[]) => {
-        this.drivers = data;
+      next: (response: PagedResponse<Driver>) => {
+        this.drivers = response.content;
       },
       error: (err: any) => {
         console.error('Erro ao carregar motoristas', err);
