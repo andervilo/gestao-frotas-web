@@ -11,6 +11,7 @@ import { MaintenanceFormComponent } from './pages/maintenances/maintenance-form/
 import { CostReportComponent } from './pages/reports/cost-report/cost-report.component';
 import { FleetUtilizationReportComponent } from './pages/reports/fleet-utilization-report/fleet-utilization-report.component';
 import { MaintenanceReportComponent } from './components/maintenance-report/maintenance-report.component';
+import { CorrectiveMaintenanceReportComponent } from './components/corrective-maintenance-report/corrective-maintenance-report.component';
 import { DriverPerformanceReportComponent } from './components/driver-performance-report/driver-performance-report.component';
 import { TripReportComponent } from './components/trip-report/trip-report.component';
 import { DepreciationReportComponent } from './components/depreciation-report/depreciation-report.component';
@@ -43,6 +44,7 @@ export const routes: Routes = [
   { path: 'reports/costs', component: CostReportComponent },
   { path: 'reports/fleet-utilization', component: FleetUtilizationReportComponent },
   { path: 'reports/maintenance', component: MaintenanceReportComponent },
+  { path: 'reports/corrective-maintenance', component: CorrectiveMaintenanceReportComponent },
   { path: 'reports/driver-performance', component: DriverPerformanceReportComponent },
   { path: 'reports/trips', component: TripReportComponent },
   { path: 'reports/depreciation', component: DepreciationReportComponent },

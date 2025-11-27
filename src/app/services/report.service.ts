@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { CostReport } from '../models/reports/cost-report.model';
 import { FleetUtilizationReport } from '../models/reports/fleet-utilization-report.model';
 import { MaintenanceReport } from '../models/reports/maintenance-report.model';
+import { CorrectiveMaintenanceReport } from '../models/reports/corrective-maintenance-report.model';
 import { DriverPerformanceReport } from '../models/reports/driver-performance-report.model';
 import { TripReport } from '../models/reports/trip-report.model';
 import { DepreciationReport } from '../models/reports/depreciation-report.model';
@@ -124,6 +125,35 @@ export class ReportService {
     }).subscribe({
       next: (blob) => this.downloadFile(blob, `relatorio-manutencao-${new Date().toISOString().split('T')[0]}.pdf`),
       error: (err) => console.error('Erro ao exportar PDF', err)
+    });
+  }
+
+  // ===== Relatório 3.1: Manutenção Corretiva =====
+
+  getCorrectiveMaintenanceReport(startDate: string, endDate: string): Observable<CorrectiveMaintenanceReport> {
+    const params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+    return this.http.get<CorrectiveMaintenanceReport>(`${this.apiUrl}/corrective-maintenance`, { params });
+  }
+
+  exportCorrectiveMaintenanceToExcel(startDate: string, endDate: string): Observable<Blob> {
+    const params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+    return this.http.get(`${this.apiUrl}/corrective-maintenance/export/excel`, { 
+      params, 
+      responseType: 'blob' 
+    });
+  }
+
+  exportCorrectiveMaintenanceToPDF(startDate: string, endDate: string): Observable<Blob> {
+    const params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+    return this.http.get(`${this.apiUrl}/corrective-maintenance/export/pdf`, { 
+      params, 
+      responseType: 'blob' 
     });
   }
 
