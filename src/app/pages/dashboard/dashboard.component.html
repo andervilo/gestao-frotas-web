@@ -1,29 +1,154 @@
 <div class="dashboard">
   <h1>Dashboard - Gestão de Frotas</h1>
   
-  <div class="cards">
-    <div class="card">
-      <h3>Veículos</h3>
-      <p class="number">--</p>
-      <a routerLink="/vehicles" class="link">Ver todos</a>
+  <div *ngIf="loading" class="loading">
+    Carregando estatísticas...
+  </div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="stats && !loading" class="dashboard-content">
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'vehicles'"
+        (click)="setActiveTab('vehicles')">
+        🚗 Veículos
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'drivers'"
+        (click)="setActiveTab('drivers')">
+        👨‍✈️ Motoristas
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'trips'"
+        (click)="setActiveTab('trips')">
+        🗺️ Viagens
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'maintenances'"
+        (click)="setActiveTab('maintenances')">
+        🔧 Manutenções
+      </button>
     </div>
-    
-    <div class="card">
-      <h3>Motoristas</h3>
-      <p class="number">--</p>
-      <a routerLink="/drivers" class="link">Ver todos</a>
-    </div>
-    
-    <div class="card">
-      <h3>Viagens</h3>
-      <p class="number">--</p>
-      <a routerLink="/trips" class="link">Ver todas</a>
-    </div>
-    
-    <div class="card">
-      <h3>Manutenções</h3>
-      <p class="number">--</p>
-      <a routerLink="/maintenances" class="link">Ver todas</a>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Veículos Tab -->
+      <div *ngIf="activeTab === 'vehicles'" class="tab-panel">
+        <div class="cards">
+          <div class="card primary">
+            <h3>Total</h3>
+            <p class="number">{{ stats.totalVehicles }}</p>
+            <a routerLink="/vehicles" class="link">Ver todos</a>
+          </div>
+          
+          <div class="card success">
+            <h3>Disponíveis</h3>
+            <p class="number">{{ stats.availableVehicles }}</p>
+            <p class="description">Prontos para uso</p>
+          </div>
+          
+          <div class="card warning">
+            <h3>Em Uso</h3>
+            <p class="number">{{ stats.inUseVehicles }}</p>
+            <p class="description">Em viagem</p>
+          </div>
+          
+          <div class="card danger">
+            <h3>Em Manutenção</h3>
+            <p class="number">{{ stats.inMaintenanceVehicles }}</p>
+            <p class="description">Indisponíveis</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Motoristas Tab -->
+      <div *ngIf="activeTab === 'drivers'" class="tab-panel">
+        <div class="cards">
+          <div class="card primary">
+            <h3>Total</h3>
+            <p class="number">{{ stats.totalDrivers }}</p>
+            <a routerLink="/drivers" class="link">Ver todos</a>
+          </div>
+          
+          <div class="card success">
+            <h3>Ativos</h3>
+            <p class="number">{{ stats.activeDrivers }}</p>
+            <p class="description">Disponíveis para trabalho</p>
+          </div>
+          
+          <div class="card secondary">
+            <h3>Inativos</h3>
+            <p class="number">{{ stats.inactiveDrivers }}</p>
+            <p class="description">Indisponíveis</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Viagens Tab -->
+      <div *ngIf="activeTab === 'trips'" class="tab-panel">
+        <div class="cards">
+          <div class="card primary">
+            <h3>Total</h3>
+            <p class="number">{{ stats.totalTrips }}</p>
+            <a routerLink="/trips" class="link">Ver todas</a>
+          </div>
+          
+          <div class="card info">
+            <h3>Agendadas</h3>
+            <p class="number">{{ stats.scheduledTrips }}</p>
+            <p class="description">Aguardando início</p>
+          </div>
+          
+          <div class="card warning">
+            <h3>Em Andamento</h3>
+            <p class="number">{{ stats.inProgressTrips }}</p>
+            <p class="description">Em execução</p>
+          </div>
+          
+          <div class="card success">
+            <h3>Concluídas</h3>
+            <p class="number">{{ stats.completedTrips }}</p>
+            <p class="description">Finalizadas</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manutenções Tab -->
+      <div *ngIf="activeTab === 'maintenances'" class="tab-panel">
+        <div class="cards">
+          <div class="card primary">
+            <h3>Total</h3>
+            <p class="number">{{ stats.totalMaintenances }}</p>
+            <a routerLink="/maintenances" class="link">Ver todas</a>
+          </div>
+          
+          <div class="card info">
+            <h3>Agendadas</h3>
+            <p class="number">{{ stats.scheduledMaintenances }}</p>
+            <p class="description">Aguardando início</p>
+          </div>
+          
+          <div class="card warning">
+            <h3>Em Progresso</h3>
+            <p class="number">{{ stats.inProgressMaintenances }}</p>
+            <p class="description">Em execução</p>
+          </div>
+          
+          <div class="card success">
+            <h3>Concluídas</h3>
+            <p class="number">{{ stats.completedMaintenances }}</p>
+            <p class="description">Finalizadas</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
