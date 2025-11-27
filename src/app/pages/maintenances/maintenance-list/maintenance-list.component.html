@@ -1,9 +1,93 @@
 <div class="maintenance-list">
   <div class="header">
     <h1>Manutenções</h1>
-    <button routerLink="/maintenances/new" class="btn btn-primary">
-      + Nova Manutenção
-    </button>
+    <div class="header-actions">
+      <!-- Filtros por Status -->
+      <div class="filter-group">
+        <label>Status:</label>
+        <div class="filter-buttons">
+          <button 
+            (click)="filterByStatus('all')" 
+            class="btn btn-sm"
+            [class.btn-primary]="filterStatus === 'all' && filterType === 'all' && !selectedVehicleId"
+            [class.btn-outline]="filterStatus !== 'all' || filterType !== 'all' || selectedVehicleId">
+            Todos
+          </button>
+          <button 
+            (click)="filterByStatus(MaintenanceStatus.SCHEDULED)" 
+            class="btn btn-sm"
+            [class.btn-primary]="filterStatus === MaintenanceStatus.SCHEDULED && !selectedVehicleId"
+            [class.btn-outline]="filterStatus !== MaintenanceStatus.SCHEDULED || selectedVehicleId">
+            Agendadas
+          </button>
+          <button 
+            (click)="filterByStatus(MaintenanceStatus.IN_PROGRESS)" 
+            class="btn btn-sm"
+            [class.btn-primary]="filterStatus === MaintenanceStatus.IN_PROGRESS && !selectedVehicleId"
+            [class.btn-outline]="filterStatus !== MaintenanceStatus.IN_PROGRESS || selectedVehicleId">
+            Em Progresso
+          </button>
+          <button 
+            (click)="filterByStatus(MaintenanceStatus.COMPLETED)" 
+            class="btn btn-sm"
+            [class.btn-primary]="filterStatus === MaintenanceStatus.COMPLETED && !selectedVehicleId"
+            [class.btn-outline]="filterStatus !== MaintenanceStatus.COMPLETED || selectedVehicleId">
+            Concluídas
+          </button>
+        </div>
+      </div>
+      
+      <!-- Filtros por Tipo -->
+      <div class="filter-group">
+        <label>Tipo:</label>
+        <div class="filter-buttons">
+          <button 
+            (click)="filterByType('all')" 
+            class="btn btn-sm"
+            [class.btn-primary]="filterType === 'all' && filterStatus === 'all' && !selectedVehicleId"
+            [class.btn-outline]="filterType !== 'all' || filterStatus !== 'all' || selectedVehicleId">
+            Todos
+          </button>
+          <button 
+            (click)="filterByType(MaintenanceType.PREVENTIVE)" 
+            class="btn btn-sm"
+            [class.btn-primary]="filterType === MaintenanceType.PREVENTIVE && !selectedVehicleId"
+            [class.btn-outline]="filterType !== MaintenanceType.PREVENTIVE || selectedVehicleId">
+            Preventiva
+          </button>
+          <button 
+            (click)="filterByType(MaintenanceType.CORRECTIVE)" 
+            class="btn btn-sm"
+            [class.btn-primary]="filterType === MaintenanceType.CORRECTIVE && !selectedVehicleId"
+            [class.btn-outline]="filterType !== MaintenanceType.CORRECTIVE || selectedVehicleId">
+            Corretiva
+          </button>
+        </div>
+      </div>
+      
+      <!-- Filtro por Veículo -->
+      <div class="vehicle-filter">
+        <select 
+          [(ngModel)]="selectedVehicleId" 
+          (change)="filterByVehicle()"
+          class="form-select">
+          <option value="">Filtrar por Veículo</option>
+          <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
+            {{ vehicle.licensePlate }} - {{ vehicle.brand }} {{ vehicle.model }}
+          </option>
+        </select>
+        <button 
+          *ngIf="selectedVehicleId || filterStatus !== 'all' || filterType !== 'all'"
+          (click)="clearFilters()" 
+          class="btn btn-sm btn-outline"
+          title="Limpar Filtros">
+          ✕
+        </button>
+      </div>
+      <button routerLink="/maintenances/new" class="btn btn-primary">
+        + Nova Manutenção
+      </button>
+    </div>
   </div>
 
   <div *ngIf="loading" class="loading">Carregando...</div>
@@ -26,7 +110,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let maintenance of maintenances">
-          <td><strong>{{ maintenance.vehicleId }}</strong></td>
+          <td><strong>{{ getVehicleInfo(maintenance.vehicleId) }}</strong></td>
           <td>
             <span class="badge">{{ getTypeLabel(maintenance.type) }}</span>
           </td>
@@ -44,6 +128,27 @@
             </span>
           </td>
           <td class="actions">
+            <button 
+              *ngIf="canStart(maintenance)"
+              (click)="openActionModal('start', maintenance)" 
+              class="btn btn-sm btn-primary"
+              title="Iniciar Manutenção">
+              ▶️
+            </button>
+            <button 
+              *ngIf="canComplete(maintenance)"
+              (click)="openActionModal('complete', maintenance)" 
+              class="btn btn-sm btn-success"
+              title="Concluir Manutenção">
+              ✓
+            </button>
+            <button 
+              *ngIf="canCancel(maintenance)"
+              (click)="openActionModal('cancel', maintenance)" 
+              class="btn btn-sm btn-danger"
+              title="Cancelar Manutenção">
+              ✕
+            </button>
             <button 
               [routerLink]="['/maintenances', maintenance.id, 'edit']" 
               class="btn btn-sm btn-secondary"
@@ -63,5 +168,84 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- Modal para Ações -->
+<div class="modal-overlay" *ngIf="showActionModal" (click)="closeActionModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ getModalTitle() }}</h2>
+      <button class="close-btn" (click)="closeActionModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="maintenance-info" *ngIf="selectedMaintenance">
+        <p><strong>Veículo:</strong> {{ getVehicleInfo(selectedMaintenance.vehicleId) }}</p>
+        <p><strong>Tipo:</strong> {{ getTypeLabel(selectedMaintenance.type) }}</p>
+        <p><strong>Descrição:</strong> {{ selectedMaintenance.description }}</p>
+        <p *ngIf="selectedMaintenance.cost">
+          <strong>Custo Estimado:</strong> R$ {{ selectedMaintenance.cost | number:'1.2-2' }}
+        </p>
+      </div>
+
+      <!-- Confirmação para Iniciar -->
+      <div *ngIf="modalAction === 'start'">
+        <p>Deseja realmente iniciar esta manutenção?</p>
+      </div>
+
+      <!-- Formulário para Concluir -->
+      <div *ngIf="modalAction === 'complete'">
+        <div class="form-group">
+          <label for="finalCost">Custo Final *</label>
+          <input 
+            type="number" 
+            id="finalCost"
+            [(ngModel)]="completeForm.finalCost"
+            min="0"
+            step="0.01"
+            class="form-control"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Observações</label>
+          <textarea 
+            id="notes"
+            [(ngModel)]="completeForm.notes"
+            class="form-control"
+            rows="3"
+            placeholder="Observações sobre a conclusão (opcional)"></textarea>
+        </div>
+      </div>
+
+      <!-- Formulário para Cancelar -->
+      <div *ngIf="modalAction === 'cancel'">
+        <div class="form-group">
+          <label for="reason">Motivo do Cancelamento *</label>
+          <textarea 
+            id="reason"
+            [(ngModel)]="cancelForm.reason"
+            class="form-control"
+            rows="3"
+            placeholder="Informe o motivo do cancelamento"
+            required></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeActionModal()">
+        Cancelar
+      </button>
+      <button 
+        class="btn"
+        [class.btn-primary]="modalAction === 'start'"
+        [class.btn-success]="modalAction === 'complete'"
+        [class.btn-danger]="modalAction === 'cancel'"
+        (click)="executeAction()"
+        [disabled]="modalAction === 'complete' && completeForm.finalCost <= 0 || 
+                    modalAction === 'cancel' && !cancelForm.reason.trim()">
+        {{ modalAction === 'start' ? 'Iniciar' : modalAction === 'complete' ? 'Concluir' : 'Cancelar' }}
+      </button>
+    </div>
   </div>
 </div>

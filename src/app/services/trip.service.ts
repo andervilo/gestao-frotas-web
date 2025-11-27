@@ -44,6 +44,14 @@ export class TripService {
     return this.http.get<Trip[]>(`${this.apiUrl}/in-progress`);
   }
 
+  getCompletedTrips(): Observable<Trip[]> {
+    return this.http.get<Trip[]>(`${this.apiUrl}/completed`);
+  }
+
+  getScheduledTrips(): Observable<Trip[]> {
+    return this.http.get<Trip[]>(`${this.apiUrl}/scheduled`);
+  }
+
   completeTrip(id: string, endMileage: number, notes?: string): Observable<Trip> {
     const params: any = { endMileage: endMileage.toString() };
     if (notes) {

@@ -24,6 +24,27 @@
       display: flex;
       gap: 8px;
     }
+
+    .vehicle-filter {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
+      .form-select {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+        min-width: 200px;
+
+        &:focus {
+          outline: none;
+          border-color: #2196F3;
+        }
+      }
+    }
   }
 
   .loading, .error {

@@ -4,6 +4,10 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Trip } from '../../../models/trip.model';
 import { TripService } from '../../../services/trip.service';
+import { Vehicle } from '../../../models/vehicle.model';
+import { VehicleService } from '../../../services/vehicle.service';
+import { Driver } from '../../../models/driver.model';
+import { DriverService } from '../../../services/driver.service';
 
 @Component({
   selector: 'app-trip-list',
@@ -14,9 +18,12 @@ import { TripService } from '../../../services/trip.service';
 })
 export class TripListComponent implements OnInit {
   trips: Trip[] = [];
+  vehicles: Vehicle[] = [];
+  drivers: Driver[] = [];
   loading = false;
   error: string | null = null;
-  filterType: 'all' | 'in-progress' | 'completed' = 'all';
+  filterStatus: 'all' | 'scheduled' | 'in-progress' | 'completed' = 'all';
+  selectedVehicleId: string = '';
   
   // Modal para completar viagem
   showCompleteModal = false;
@@ -26,10 +33,38 @@ export class TripListComponent implements OnInit {
     notes: ''
   };
 
-  constructor(private tripService: TripService) {}
+  constructor(
+    private tripService: TripService,
+    private vehicleService: VehicleService,
+    private driverService: DriverService
+  ) {}
 
   ngOnInit(): void {
+    this.loadVehicles();
+    this.loadDrivers();
     this.loadTrips();
+  }
+
+  loadVehicles(): void {
+    this.vehicleService.getAll().subscribe({
+      next: (data: Vehicle[]) => {
+        this.vehicles = data;
+      },
+      error: (err: any) => {
+        console.error('Erro ao carregar veículos', err);
+      }
+    });
+  }
+
+  loadDrivers(): void {
+    this.driverService.getAll().subscribe({
+      next: (data: Driver[]) => {
+        this.drivers = data;
+      },
+      error: (err: any) => {
+        console.error('Erro ao carregar motoristas', err);
+      }
+    });
   }
 
   loadTrips(): void {
@@ -37,19 +72,23 @@ export class TripListComponent implements OnInit {
     this.error = null;
     
     let request;
-    if (this.filterType === 'in-progress') {
+    
+    // Filtro por veículo tem prioridade
+    if (this.selectedVehicleId) {
+      request = this.tripService.getByVehicleId(this.selectedVehicleId);
+    } else if (this.filterStatus === 'scheduled') {
+      request = this.tripService.getScheduledTrips();
+    } else if (this.filterStatus === 'in-progress') {
       request = this.tripService.getInProgressTrips();
+    } else if (this.filterStatus === 'completed') {
+      request = this.tripService.getCompletedTrips();
     } else {
       request = this.tripService.getAll();
     }
     
     request.subscribe({
       next: (data: Trip[]) => {
-        if (this.filterType === 'completed') {
-          this.trips = data.filter(trip => trip.endDateTime !== null);
-        } else {
-          this.trips = data;
-        }
+        this.trips = data;
         this.loading = false;
       },
       error: (err: any) => {
@@ -60,8 +99,20 @@ export class TripListComponent implements OnInit {
     });
   }
 
-  filterTrips(type: 'all' | 'in-progress' | 'completed'): void {
-    this.filterType = type;
+  filterByStatus(status: 'all' | 'scheduled' | 'in-progress' | 'completed'): void {
+    this.filterStatus = status;
+    this.selectedVehicleId = ''; // Limpar filtro de veículo
+    this.loadTrips();
+  }
+
+  filterByVehicle(): void {
+    this.filterStatus = 'all'; // Resetar filtro de status
+    this.loadTrips();
+  }
+
+  clearFilters(): void {
+    this.filterStatus = 'all';
+    this.selectedVehicleId = '';
     this.loadTrips();
   }
 
@@ -138,5 +189,21 @@ export class TripListComponent implements OnInit {
 
   canCompleteTrip(trip: Trip): boolean {
     return !!trip.startDateTime && !trip.endDateTime;
+  }
+
+  getVehicleInfo(vehicleId: string): string {
+    const vehicle = this.vehicles.find(v => v.id === vehicleId);
+    if (vehicle) {
+      return `${vehicle.licensePlate} - ${vehicle.brand} ${vehicle.model}`;
+    }
+    return vehicleId;
+  }
+
+  getDriverInfo(driverId: string): string {
+    const driver = this.drivers.find(d => d.id === driverId);
+    if (driver) {
+      return `${driver.name} - CNH: ${driver.cnh}`;
+    }
+    return driverId;
   }
 }

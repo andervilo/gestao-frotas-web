@@ -4,25 +4,50 @@
     <div class="header-actions">
       <div class="filter-buttons">
         <button 
-          (click)="filterTrips('all')" 
+          (click)="filterByStatus('all')" 
           class="btn btn-sm"
-          [class.btn-primary]="filterType === 'all'"
-          [class.btn-outline]="filterType !== 'all'">
+          [class.btn-primary]="filterStatus === 'all' && !selectedVehicleId"
+          [class.btn-outline]="filterStatus !== 'all' || selectedVehicleId">
           Todas
         </button>
         <button 
-          (click)="filterTrips('in-progress')" 
+          (click)="filterByStatus('scheduled')" 
           class="btn btn-sm"
-          [class.btn-primary]="filterType === 'in-progress'"
-          [class.btn-outline]="filterType !== 'in-progress'">
+          [class.btn-primary]="filterStatus === 'scheduled' && !selectedVehicleId"
+          [class.btn-outline]="filterStatus !== 'scheduled' || selectedVehicleId">
+          Agendadas
+        </button>
+        <button 
+          (click)="filterByStatus('in-progress')" 
+          class="btn btn-sm"
+          [class.btn-primary]="filterStatus === 'in-progress' && !selectedVehicleId"
+          [class.btn-outline]="filterStatus !== 'in-progress' || selectedVehicleId">
           Em Andamento
         </button>
         <button 
-          (click)="filterTrips('completed')" 
+          (click)="filterByStatus('completed')" 
           class="btn btn-sm"
-          [class.btn-primary]="filterType === 'completed'"
-          [class.btn-outline]="filterType !== 'completed'">
+          [class.btn-primary]="filterStatus === 'completed' && !selectedVehicleId"
+          [class.btn-outline]="filterStatus !== 'completed' || selectedVehicleId">
           Finalizadas
+        </button>
+      </div>
+      <div class="vehicle-filter">
+        <select 
+          [(ngModel)]="selectedVehicleId" 
+          (change)="filterByVehicle()"
+          class="form-select">
+          <option value="">Filtrar por Veículo</option>
+          <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
+            {{ vehicle.licensePlate }} - {{ vehicle.brand }} {{ vehicle.model }}
+          </option>
+        </select>
+        <button 
+          *ngIf="selectedVehicleId || filterStatus !== 'all'"
+          (click)="clearFilters()" 
+          class="btn btn-sm btn-outline"
+          title="Limpar Filtros">
+          ✕
         </button>
       </div>
       <button routerLink="/trips/new" class="btn btn-primary">
@@ -53,8 +78,8 @@
         <tr *ngFor="let trip of trips">
           <td><strong>{{ trip.origin }}</strong></td>
           <td><strong>{{ trip.destination }}</strong></td>
-          <td>{{ trip.vehicleId }}</td>
-          <td>{{ trip.driverId }}</td>
+          <td>{{ getVehicleInfo(trip.vehicleId) }}</td>
+          <td>{{ getDriverInfo(trip.driverId) }}</td>
           <td>{{ trip.startDateTime ? (trip.startDateTime | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
           <td>{{ trip.endDateTime ? (trip.endDateTime | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
           <td>
@@ -105,6 +130,8 @@
     </div>
     <div class="modal-body">
       <div class="trip-info" *ngIf="selectedTrip">
+        <p><strong>Veículo:</strong> {{ getVehicleInfo(selectedTrip.vehicleId) }}</p>
+        <p><strong>Motorista:</strong> {{ getDriverInfo(selectedTrip.driverId) }}</p>
         <p><strong>Origem:</strong> {{ selectedTrip.origin }}</p>
         <p><strong>Destino:</strong> {{ selectedTrip.destination }}</p>
         <p><strong>KM Inicial:</strong> {{ selectedTrip.startMileage | number }}</p>
