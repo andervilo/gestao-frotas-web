@@ -16,13 +16,48 @@
     .header-actions {
       display: flex;
       gap: 15px;
-      align-items: center;
+      align-items: flex-end;
       flex-wrap: wrap;
     }
 
-    .filter-buttons {
+    .filter-dropdown {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 180px;
+
+      label {
+        font-size: 12px;
+        font-weight: 500;
+        color: #666;
+        margin: 0;
+      }
+
+      select {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+
+        &:hover {
+          border-color: #2196F3;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: #2196F3;
+          box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+      }
+    }
+
+    .filter-actions {
       display: flex;
       gap: 8px;
+      align-items: flex-end;
     }
 
     .vehicle-filter {

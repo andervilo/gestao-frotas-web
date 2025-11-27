@@ -99,10 +99,22 @@ export class MaintenanceListComponent implements OnInit {
     this.loadMaintenances();
   }
 
+  onStatusChange(): void {
+    this.filterType = 'all';
+    this.selectedVehicleId = '';
+    this.loadMaintenances();
+  }
+
   filterByType(type: MaintenanceType | 'all'): void {
     this.filterType = type;
     this.filterStatus = 'all'; // Limpar filtro de status
     this.selectedVehicleId = ''; // Limpar filtro de veículo
+    this.loadMaintenances();
+  }
+
+  onTypeChange(): void {
+    this.filterStatus = 'all';
+    this.selectedVehicleId = '';
     this.loadMaintenances();
   }
 

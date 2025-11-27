@@ -2,80 +2,53 @@
   <div class="header">
     <h1>Manutenções</h1>
     <div class="header-actions">
-      <!-- Filtros por Status -->
-      <div class="filter-group">
-        <label>Status:</label>
-        <div class="filter-buttons">
-          <button 
-            (click)="filterByStatus('all')" 
-            class="btn btn-sm"
-            [class.btn-primary]="filterStatus === 'all' && filterType === 'all' && !selectedVehicleId"
-            [class.btn-outline]="filterStatus !== 'all' || filterType !== 'all' || selectedVehicleId">
-            Todos
-          </button>
-          <button 
-            (click)="filterByStatus(MaintenanceStatus.SCHEDULED)" 
-            class="btn btn-sm"
-            [class.btn-primary]="filterStatus === MaintenanceStatus.SCHEDULED && !selectedVehicleId"
-            [class.btn-outline]="filterStatus !== MaintenanceStatus.SCHEDULED || selectedVehicleId">
-            Agendadas
-          </button>
-          <button 
-            (click)="filterByStatus(MaintenanceStatus.IN_PROGRESS)" 
-            class="btn btn-sm"
-            [class.btn-primary]="filterStatus === MaintenanceStatus.IN_PROGRESS && !selectedVehicleId"
-            [class.btn-outline]="filterStatus !== MaintenanceStatus.IN_PROGRESS || selectedVehicleId">
-            Em Progresso
-          </button>
-          <button 
-            (click)="filterByStatus(MaintenanceStatus.COMPLETED)" 
-            class="btn btn-sm"
-            [class.btn-primary]="filterStatus === MaintenanceStatus.COMPLETED && !selectedVehicleId"
-            [class.btn-outline]="filterStatus !== MaintenanceStatus.COMPLETED || selectedVehicleId">
-            Concluídas
-          </button>
-        </div>
+      <!-- Filtro por Status (Dropdown) -->
+      <div class="filter-dropdown">
+        <label for="statusFilter">Status:</label>
+        <select 
+          id="statusFilter"
+          [(ngModel)]="filterStatus" 
+          (change)="onStatusChange()"
+          class="form-select">
+          <option value="all">Todos</option>
+          <option [value]="MaintenanceStatus.SCHEDULED">Agendadas</option>
+          <option [value]="MaintenanceStatus.IN_PROGRESS">Em Progresso</option>
+          <option [value]="MaintenanceStatus.COMPLETED">Concluídas</option>
+          <option [value]="MaintenanceStatus.CANCELLED">Canceladas</option>
+        </select>
       </div>
       
-      <!-- Filtros por Tipo -->
-      <div class="filter-group">
-        <label>Tipo:</label>
-        <div class="filter-buttons">
-          <button 
-            (click)="filterByType('all')" 
-            class="btn btn-sm"
-            [class.btn-primary]="filterType === 'all' && filterStatus === 'all' && !selectedVehicleId"
-            [class.btn-outline]="filterType !== 'all' || filterStatus !== 'all' || selectedVehicleId">
-            Todos
-          </button>
-          <button 
-            (click)="filterByType(MaintenanceType.PREVENTIVE)" 
-            class="btn btn-sm"
-            [class.btn-primary]="filterType === MaintenanceType.PREVENTIVE && !selectedVehicleId"
-            [class.btn-outline]="filterType !== MaintenanceType.PREVENTIVE || selectedVehicleId">
-            Preventiva
-          </button>
-          <button 
-            (click)="filterByType(MaintenanceType.CORRECTIVE)" 
-            class="btn btn-sm"
-            [class.btn-primary]="filterType === MaintenanceType.CORRECTIVE && !selectedVehicleId"
-            [class.btn-outline]="filterType !== MaintenanceType.CORRECTIVE || selectedVehicleId">
-            Corretiva
-          </button>
-        </div>
+      <!-- Filtro por Tipo (Dropdown) -->
+      <div class="filter-dropdown">
+        <label for="typeFilter">Tipo:</label>
+        <select 
+          id="typeFilter"
+          [(ngModel)]="filterType" 
+          (change)="onTypeChange()"
+          class="form-select">
+          <option value="all">Todos</option>
+          <option [value]="MaintenanceType.PREVENTIVE">Preventiva</option>
+          <option [value]="MaintenanceType.CORRECTIVE">Corretiva</option>
+        </select>
       </div>
       
       <!-- Filtro por Veículo -->
-      <div class="vehicle-filter">
+      <div class="filter-dropdown">
+        <label for="vehicleFilter">Veículo:</label>
         <select 
+          id="vehicleFilter"
           [(ngModel)]="selectedVehicleId" 
           (change)="filterByVehicle()"
           class="form-select">
-          <option value="">Filtrar por Veículo</option>
+          <option value="">Todos os Veículos</option>
           <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
             {{ vehicle.licensePlate }} - {{ vehicle.brand }} {{ vehicle.model }}
           </option>
         </select>
+      </div>
+
+      <!-- Botão Limpar Filtros -->
+      <div class="filter-actions">
         <button 
           *ngIf="selectedVehicleId || filterStatus !== 'all' || filterType !== 'all'"
           (click)="clearFilters()" 

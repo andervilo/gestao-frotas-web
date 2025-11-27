@@ -105,6 +105,11 @@ export class TripListComponent implements OnInit {
     this.loadTrips();
   }
 
+  onStatusChange(): void {
+    this.selectedVehicleId = '';
+    this.loadTrips();
+  }
+
   filterByVehicle(): void {
     this.filterStatus = 'all'; // Resetar filtro de status
     this.loadTrips();
