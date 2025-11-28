@@ -15,18 +15,19 @@ export class DriverPerformanceReportComponent implements OnInit {
   report: DriverPerformanceReport | null = null;
   loading = false;
   error: string | null = null;
+  activeTab: string = 'cnh';
   
   startDate: string = '';
   endDate: string = '';
 
   // Pagination for CNH expiring
   currentPageCNH = 1;
-  itemsPerPageCNH = 10;
+  itemsPerPageCNH = 5;
   pageSizeOptionsCNH = [5, 10, 25, 50, 100];
 
   // Pagination for driver stats
   currentPageStats = 1;
-  itemsPerPageStats = 10;
+  itemsPerPageStats = 5;
   pageSizeOptionsStats = [5, 10, 25, 50, 100];
   
   constructor(private reportService: ReportService) {}
@@ -58,6 +59,12 @@ export class DriverPerformanceReportComponent implements OnInit {
         console.log('Dados do relatório recebidos:', data);
         this.report = data;
         this.loading = false;
+        // Define a primeira aba disponível como ativa
+        if (data.cnhExpiring && data.cnhExpiring.length > 0) {
+          this.activeTab = 'cnh';
+        } else if (data.driverStats && data.driverStats.length > 0) {
+          this.activeTab = 'stats';
+        }
       },
       error: (err) => {
         this.error = 'Erro ao carregar relatório de desempenho';

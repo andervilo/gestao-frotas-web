@@ -15,23 +15,24 @@ export class MaintenanceReportComponent implements OnInit {
   report: MaintenanceReport | null = null;
   loading = false;
   error: string | null = null;
+  activeTab: string = 'overdue';
   
   startDate: string = '';
   endDate: string = '';
 
   // Pagination for overdue
   currentPageOverdue = 1;
-  itemsPerPageOverdue = 10;
+  itemsPerPageOverdue = 5;
   pageSizeOptionsOverdue = [5, 10, 25, 50, 100];
 
   // Pagination for upcoming
   currentPageUpcoming = 1;
-  itemsPerPageUpcoming = 10;
+  itemsPerPageUpcoming = 5;
   pageSizeOptionsUpcoming = [5, 10, 25, 50, 100];
 
   // Pagination for history
   currentPageHistory = 1;
-  itemsPerPageHistory = 10;
+  itemsPerPageHistory = 5;
   pageSizeOptionsHistory = [5, 10, 25, 50, 100];
   
   constructor(private reportService: ReportService) {}
@@ -62,6 +63,14 @@ export class MaintenanceReportComponent implements OnInit {
         console.log('Maintenance Report data received:', data);
         this.report = data;
         this.loading = false;
+        // Define a primeira aba disponível como ativa
+        if (data.overdue && data.overdue.length > 0) {
+          this.activeTab = 'overdue';
+        } else if (data.upcoming && data.upcoming.length > 0) {
+          this.activeTab = 'upcoming';
+        } else {
+          this.activeTab = 'history';
+        }
       },
       error: (err) => {
         this.error = 'Erro ao carregar relatório de manutenção';
@@ -101,6 +110,28 @@ export class MaintenanceReportComponent implements OnInit {
   
   private formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
+  }
+
+  translateStatus(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      'COMPLETED': 'Concluído',
+      'PENDING': 'Pendente',
+      'SCHEDULED': 'Agendado',
+      'IN_PROGRESS': 'Em Andamento',
+      'CANCELLED': 'Cancelado'
+    };
+    return statusMap[status] || status;
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'COMPLETED': return 'status-completed';
+      case 'PENDING': return 'status-pending';
+      case 'SCHEDULED': return 'status-scheduled';
+      case 'IN_PROGRESS': return 'status-in-progress';
+      case 'CANCELLED': return 'status-cancelled';
+      default: return '';
+    }
   }
 
   // Pagination methods for overdue maintenances

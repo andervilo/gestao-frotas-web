@@ -57,8 +57,43 @@
       </div>
     </div>
     
-    <div class="section" *ngIf="report.overdueCorrective && report.overdueCorrective.length > 0">
-      <h2><i class="fas fa-exclamation-triangle"></i> Manutenções Corretivas Vencidas ({{ totalItemsOverdue }})</h2>
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'overdue'"
+          (click)="activeTab = 'overdue'"
+          *ngIf="report.overdueCorrective && report.overdueCorrective.length > 0">
+          <i class="fas fa-exclamation-triangle"></i> Vencidas ({{ totalItemsOverdue }})
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'upcoming'"
+          (click)="activeTab = 'upcoming'"
+          *ngIf="report.upcomingCorrective && report.upcomingCorrective.length > 0">
+          <i class="fas fa-calendar-alt"></i> Programadas ({{ totalItemsUpcoming }})
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'topVehicles'"
+          (click)="activeTab = 'topVehicles'"
+          *ngIf="report.topVehicles && report.topVehicles.length > 0">
+          <i class="fas fa-car-crash"></i> Top Veículos ({{ totalItemsTopVehicles }})
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'history'"
+          (click)="activeTab = 'history'">
+          <i class="fas fa-history"></i> Histórico ({{ totalItemsHistory }})
+        </button>
+      </div>
+      
+      <div class="tab-content">
+        <div class="section" *ngIf="activeTab === 'overdue' && report.overdueCorrective && report.overdueCorrective.length > 0">
+          <div class="section-header">
+            <h2><i class="fas fa-exclamation-triangle"></i> Manutenções Corretivas Vencidas</h2>
+            <span class="record-count">Mostrando {{ paginatedOverdue.length }} de {{ totalItemsOverdue }} manutenções</span>
+          </div>
       <div class="table-container">
         <table>
           <thead>
@@ -93,7 +128,7 @@
         </table>
       </div>
       
-      <div class="pagination-wrapper" *ngIf="totalPagesOverdue > 1 || totalItemsOverdue > 10">
+      <div class="pagination-wrapper" *ngIf="totalPagesOverdue > 1 || totalItemsOverdue > 5">
         <div class="pagination-left">
           <label>Itens por página:</label>
           <select class="page-size-select" [(ngModel)]="itemsPerPageOverdue" (change)="onPageSizeChangeOverdue($event)">
@@ -144,9 +179,12 @@
         </div>
       </div>
     </div>
-    
-    <div class="section" *ngIf="report.upcomingCorrective && report.upcomingCorrective.length > 0">
-      <h2><i class="fas fa-calendar-alt"></i> Manutenções Corretivas Programadas ({{ totalItemsUpcoming }})</h2>
+        
+        <div class="section" *ngIf="activeTab === 'upcoming' && report.upcomingCorrective && report.upcomingCorrective.length > 0">
+          <div class="section-header">
+            <h2><i class="fas fa-calendar-alt"></i> Manutenções Corretivas Programadas</h2>
+            <span class="record-count">Mostrando {{ paginatedUpcoming.length }} de {{ totalItemsUpcoming }} manutenções</span>
+          </div>
       <div class="table-container">
         <table>
           <thead>
@@ -181,15 +219,15 @@
         </table>
       </div>
       
-      <div class="pagination" *ngIf="totalPagesUpcoming > 1">
-        <div class="pagination-controls">
+      <div class="pagination-wrapper" *ngIf="totalPagesUpcoming > 1 || totalItemsUpcoming > 5">
+        <div class="pagination-left">
           <label>Itens por página:</label>
           <select class="page-size-select" [(ngModel)]="itemsPerPageUpcoming" (change)="onPageSizeChangeUpcoming($event)">
             <option *ngFor="let size of pageSizeOptionsUpcoming" [value]="size">{{ size }}</option>
           </select>
         </div>
         
-        <div class="pagination-buttons">
+        <div class="pagination-center">
           <button 
             class="pagination-btn" 
             (click)="changePageUpcoming(1)"
@@ -227,14 +265,17 @@
           </button>
         </div>
         
-        <span class="pagination-info">
-          Página {{ currentPageUpcoming }} de {{ totalPagesUpcoming }}
-        </span>
+        <div class="pagination-right">
+          Página {{ currentPageUpcoming }} de {{ totalPagesUpcoming }} ({{ totalItemsUpcoming }} itens)
+        </div>
       </div>
     </div>
-    
-    <div class="section" *ngIf="report.topVehicles && report.topVehicles.length > 0">
-      <h2><i class="fas fa-car-crash"></i> Veículos com Mais Manutenções Corretivas</h2>
+        
+        <div class="section" *ngIf="activeTab === 'topVehicles' && report.topVehicles && report.topVehicles.length > 0">
+          <div class="section-header">
+            <h2><i class="fas fa-car-crash"></i> Veículos com Mais Manutenções Corretivas</h2>
+            <span class="record-count">Mostrando {{ paginatedTopVehicles.length }} de {{ totalItemsTopVehicles }} veículos</span>
+          </div>
       <div class="table-container">
         <table>
           <thead>
@@ -254,15 +295,15 @@
         </table>
       </div>
       
-      <div class="pagination" *ngIf="totalPagesTopVehicles > 1">
-        <div class="pagination-controls">
+      <div class="pagination-wrapper" *ngIf="totalPagesTopVehicles > 1 || totalItemsTopVehicles > 5">
+        <div class="pagination-left">
           <label>Itens por página:</label>
           <select class="page-size-select" [(ngModel)]="itemsPerPageTopVehicles" (change)="onPageSizeChangeTopVehicles($event)">
             <option *ngFor="let size of pageSizeOptionsTopVehicles" [value]="size">{{ size }}</option>
           </select>
         </div>
         
-        <div class="pagination-buttons">
+        <div class="pagination-center">
           <button 
             class="pagination-btn" 
             (click)="changePageTopVehicles(1)"
@@ -300,14 +341,17 @@
           </button>
         </div>
         
-        <span class="pagination-info">
-          Página {{ currentPageTopVehicles }} de {{ totalPagesTopVehicles }}
-        </span>
+        <div class="pagination-right">
+          Página {{ currentPageTopVehicles }} de {{ totalPagesTopVehicles }} ({{ totalItemsTopVehicles }} itens)
+        </div>
       </div>
     </div>
-    
-    <div class="section">
-      <h2><i class="fas fa-history"></i> Histórico de Manutenções Corretivas ({{ totalItemsHistory }})</h2>
+        
+        <div class="section" *ngIf="activeTab === 'history'">
+          <div class="section-header">
+            <h2><i class="fas fa-history"></i> Histórico de Manutenções Corretivas</h2>
+            <span class="record-count">Mostrando {{ paginatedHistory.length }} de {{ totalItemsHistory }} manutenções</span>
+          </div>
       <div class="table-container">
         <table>
           <thead>
@@ -344,15 +388,15 @@
         </table>
       </div>
       
-      <div class="pagination" *ngIf="totalPagesHistory > 1">
-        <div class="pagination-controls">
+      <div class="pagination-wrapper" *ngIf="totalPagesHistory > 1 || totalItemsHistory > 5">
+        <div class="pagination-left">
           <label>Itens por página:</label>
           <select class="page-size-select" [(ngModel)]="itemsPerPageHistory" (change)="onPageSizeChangeHistory($event)">
             <option *ngFor="let size of pageSizeOptionsHistory" [value]="size">{{ size }}</option>
           </select>
         </div>
         
-        <div class="pagination-buttons">
+        <div class="pagination-center">
           <button 
             class="pagination-btn" 
             (click)="changePageHistory(1)"
@@ -390,9 +434,11 @@
           </button>
         </div>
         
-        <span class="pagination-info">
-          Página {{ currentPageHistory }} de {{ totalPagesHistory }}
-        </span>
+        <div class="pagination-right">
+          Página {{ currentPageHistory }} de {{ totalPagesHistory }} ({{ totalItemsHistory }} itens)
+        </div>
+      </div>
+    </div>
       </div>
     </div>
   </div>

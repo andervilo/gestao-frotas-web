@@ -1,11 +1,12 @@
 <div class="report-container">
-  <h2><i class="fas fa-chart-line-down"></i> Relatório de Depreciação de Veículos</h2>
-  
-  <div class="actions">
-    <button class="btn-primary" (click)="generateReport()"><i class="fas fa-sync"></i> Atualizar Relatório</button>
-    <div class="export-buttons" *ngIf="report">
-      <button class="btn-secondary" (click)="exportToExcel()"><i class="fas fa-file-excel"></i> Exportar Excel</button>
-      <button class="btn-secondary" (click)="exportToPDF()"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
+  <div class="header">
+    <h2><i class="fas fa-chart-line-down"></i> Relatório de Custos Operacionais</h2>
+    <div class="actions">
+      <button class="btn-primary" (click)="generateReport()"><i class="fas fa-sync"></i> Atualizar Relatório</button>
+      <div class="export-buttons" *ngIf="report">
+        <button class="btn-secondary" (click)="exportToExcel()"><i class="fas fa-file-excel"></i> Exportar Excel</button>
+        <button class="btn-secondary" (click)="exportToPDF()"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
+      </div>
     </div>
   </div>
   
@@ -33,7 +34,10 @@
     </div>
     
     <div class="table-section">
-      <h3><i class="fas fa-car"></i> Depreciação por Veículo ({{ totalItems }})</h3>
+      <div class="section-header">
+        <h3><i class="fas fa-car"></i> Depreciação por Veículo</h3>
+        <span class="record-count">Mostrando {{ paginatedVehicles.length }} de {{ totalItems }} veículos</span>
+      </div>
       <table class="data-table">
         <thead>
           <tr>
@@ -64,32 +68,55 @@
         </tbody>
       </table>
       
-      <div class="pagination" *ngIf="totalPages > 1">
-        <button 
-          class="pagination-btn" 
-          (click)="changePage(currentPage - 1)"
-          [disabled]="currentPage === 1">
-          <i class="fas fa-chevron-left"></i>
-        </button>
+      <div class="pagination-wrapper" *ngIf="totalPages > 1 || totalItems > 5">
+        <div class="pagination-left">
+          <label>Itens por página:</label>
+          <select class="page-size-select" [(ngModel)]="itemsPerPage" (change)="onPageSizeChange($event)">
+            <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+          </select>
+        </div>
         
-        <button 
-          *ngFor="let page of pages"
-          class="pagination-btn"
-          [class.active]="page === currentPage"
-          (click)="changePage(page)">
-          {{ page }}
-        </button>
+        <div class="pagination-center">
+          <button 
+            class="pagination-btn" 
+            (click)="changePage(1)"
+            [disabled]="currentPage === 1">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn" 
+            (click)="changePage(currentPage - 1)"
+            [disabled]="currentPage === 1">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <button 
+            *ngFor="let page of pages"
+            class="pagination-btn"
+            [class.active]="page === currentPage"
+            (click)="changePage(page)">
+            {{ page }}
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePage(currentPage + 1)"
+            [disabled]="currentPage === totalPages">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePage(totalPages)"
+            [disabled]="currentPage === totalPages">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </div>
         
-        <button 
-          class="pagination-btn"
-          (click)="changePage(currentPage + 1)"
-          [disabled]="currentPage === totalPages">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-        
-        <span class="pagination-info">
+        <div class="pagination-right">
           Página {{ currentPage }} de {{ totalPages }} ({{ totalItems }} itens)
-        </span>
+        </div>
       </div>
     </div>
   </div>

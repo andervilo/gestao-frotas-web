@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ReportService } from '../../services/report.service';
 import { DepreciationReport } from '../../models/reports/depreciation-report.model';
 
 @Component({
   selector: 'app-depreciation-report',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './depreciation-report.component.html',
   styleUrls: ['./depreciation-report.component.scss']
 })
@@ -17,7 +18,7 @@ export class DepreciationReportComponent implements OnInit {
 
   // Pagination for vehicle depreciation
   currentPage = 1;
-  itemsPerPage = 10;
+  itemsPerPage = 5;
   pageSizeOptions = [5, 10, 25, 50, 100];
   
   constructor(private reportService: ReportService) {}

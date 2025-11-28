@@ -15,12 +15,13 @@ export class TripReportComponent implements OnInit {
   report: TripReport | null = null;
   loading = false;
   error: string | null = null;
+  activeTab: string = 'topRoutes';
   startDate: string = '';
   endDate: string = '';
 
   // Pagination for top routes
   currentPageTopRoutes = 1;
-  itemsPerPageTopRoutes = 10;
+  itemsPerPageTopRoutes = 5;
   pageSizeOptionsTopRoutes = [5, 10, 25, 50, 100];
   
   constructor(private reportService: ReportService) {}
@@ -47,6 +48,12 @@ export class TripReportComponent implements OnInit {
         console.log('Dados do relatório recebidos:', data);
         this.report = data;
         this.loading = false;
+        // Define a primeira aba disponível como ativa
+        if (data.topRoutes && data.topRoutes.length > 0) {
+          this.activeTab = 'topRoutes';
+        } else {
+          this.activeTab = 'byStatus';
+        }
       },
       error: (err) => {
         this.error = 'Erro ao carregar relatório de viagens';

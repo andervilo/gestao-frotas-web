@@ -75,8 +75,29 @@
       </div>
     </div>
     
-    <div class="section" *ngIf="report.topRoutes && report.topRoutes.length > 0">
-      <h2><i class="fas fa-map-marker-alt"></i> Rotas Mais Frequentes ({{ totalItemsTopRoutes }})</h2>
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'topRoutes'"
+          (click)="activeTab = 'topRoutes'"
+          *ngIf="report.topRoutes && report.topRoutes.length > 0">
+          <i class="fas fa-map-marker-alt"></i> Rotas Frequentes ({{ totalItemsTopRoutes }})
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'byStatus'"
+          (click)="activeTab = 'byStatus'">
+          <i class="fas fa-chart-bar"></i> Por Status ({{ getStatusKeys().length }})
+        </button>
+      </div>
+      
+      <div class="tab-content">
+        <div class="section" *ngIf="activeTab === 'topRoutes' && report.topRoutes && report.topRoutes.length > 0">
+          <div class="section-header">
+            <h2><i class="fas fa-map-marker-alt"></i> Rotas Mais Frequentes</h2>
+            <span class="record-count">Mostrando {{ paginatedTopRoutes.length }} de {{ totalItemsTopRoutes }} rotas</span>
+          </div>
       <div class="table-container">
         <table>
           <thead>
@@ -100,37 +121,63 @@
         </table>
       </div>
       
-      <div class="pagination" *ngIf="totalPagesTopRoutes > 1">
-        <button 
-          class="pagination-btn" 
-          (click)="changePageTopRoutes(currentPageTopRoutes - 1)"
-          [disabled]="currentPageTopRoutes === 1">
-          <i class="fas fa-chevron-left"></i>
-        </button>
+      <div class="pagination-wrapper" *ngIf="totalPagesTopRoutes > 1 || totalItemsTopRoutes > 5">
+        <div class="pagination-left">
+          <label>Itens por página:</label>
+          <select class="page-size-select" [(ngModel)]="itemsPerPageTopRoutes" (change)="onPageSizeChangeTopRoutes($event)">
+            <option *ngFor="let size of pageSizeOptionsTopRoutes" [value]="size">{{ size }}</option>
+          </select>
+        </div>
         
-        <button 
-          *ngFor="let page of pagesTopRoutes"
-          class="pagination-btn"
-          [class.active]="page === currentPageTopRoutes"
-          (click)="changePageTopRoutes(page)">
-          {{ page }}
-        </button>
+        <div class="pagination-center">
+          <button 
+            class="pagination-btn" 
+            (click)="changePageTopRoutes(1)"
+            [disabled]="currentPageTopRoutes === 1">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn" 
+            (click)="changePageTopRoutes(currentPageTopRoutes - 1)"
+            [disabled]="currentPageTopRoutes === 1">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <button 
+            *ngFor="let page of pagesTopRoutes"
+            class="pagination-btn"
+            [class.active]="page === currentPageTopRoutes"
+            (click)="changePageTopRoutes(page)">
+            {{ page }}
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageTopRoutes(currentPageTopRoutes + 1)"
+            [disabled]="currentPageTopRoutes === totalPagesTopRoutes">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageTopRoutes(totalPagesTopRoutes)"
+            [disabled]="currentPageTopRoutes === totalPagesTopRoutes">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </div>
         
-        <button 
-          class="pagination-btn"
-          (click)="changePageTopRoutes(currentPageTopRoutes + 1)"
-          [disabled]="currentPageTopRoutes === totalPagesTopRoutes">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-        
-        <span class="pagination-info">
+        <div class="pagination-right">
           Página {{ currentPageTopRoutes }} de {{ totalPagesTopRoutes }} ({{ totalItemsTopRoutes }} itens)
-        </span>
+        </div>
       </div>
     </div>
-    
-    <div class="section">
-      <h2><i class="fas fa-chart-bar"></i> Viagens por Status</h2>
+        
+        <div class="section" *ngIf="activeTab === 'byStatus'">
+          <div class="section-header">
+            <h2><i class="fas fa-chart-bar"></i> Viagens por Status</h2>
+            <span class="record-count">{{ getStatusKeys().length }} status diferentes</span>
+          </div>
       <div class="table-container">
         <table>
           <thead>
@@ -146,6 +193,8 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
       </div>
     </div>
   </div>

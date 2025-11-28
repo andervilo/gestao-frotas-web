@@ -65,9 +65,30 @@
       </div>
     </div>
     
-    <!-- CNHs Próximas do Vencimento -->
-    <div class="section" *ngIf="report.cnhExpiring && report.cnhExpiring.length > 0">
-      <h2><i class="fas fa-exclamation-triangle"></i> CNHs Próximas do Vencimento ({{ totalItemsCNH }})</h2>
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'cnh'"
+          (click)="activeTab = 'cnh'"
+          *ngIf="report.cnhExpiring && report.cnhExpiring.length > 0">
+          <i class="fas fa-exclamation-triangle"></i> CNHs Vencendo ({{ totalItemsCNH }})
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'stats'"
+          (click)="activeTab = 'stats'"
+          *ngIf="report.driverStats && report.driverStats.length > 0">
+          <i class="fas fa-chart-line"></i> Estatísticas ({{ totalItemsStats }})
+        </button>
+      </div>
+      
+      <div class="tab-content">
+        <div class="section" *ngIf="activeTab === 'cnh' && report.cnhExpiring && report.cnhExpiring.length > 0">
+          <div class="section-header">
+            <h2><i class="fas fa-exclamation-triangle"></i> CNHs Próximas do Vencimento</h2>
+            <span class="record-count">Mostrando {{ paginatedCNH.length }} de {{ totalItemsCNH }} motoristas</span>
+          </div>
       <div class="table-container">
         <table>
           <thead>
@@ -95,38 +116,63 @@
         </table>
       </div>
       
-      <div class="pagination" *ngIf="totalPagesCNH > 1">
-        <button 
-          class="pagination-btn" 
-          (click)="changePageCNH(currentPageCNH - 1)"
-          [disabled]="currentPageCNH === 1">
-          <i class="fas fa-chevron-left"></i>
-        </button>
+      <div class="pagination-wrapper" *ngIf="totalPagesCNH > 1 || totalItemsCNH > 5">
+        <div class="pagination-left">
+          <label>Itens por página:</label>
+          <select class="page-size-select" [(ngModel)]="itemsPerPageCNH" (change)="onPageSizeChangeCNH($event)">
+            <option *ngFor="let size of pageSizeOptionsCNH" [value]="size">{{ size }}</option>
+          </select>
+        </div>
         
-        <button 
-          *ngFor="let page of pagesCNH"
-          class="pagination-btn"
-          [class.active]="page === currentPageCNH"
-          (click)="changePageCNH(page)">
-          {{ page }}
-        </button>
+        <div class="pagination-center">
+          <button 
+            class="pagination-btn" 
+            (click)="changePageCNH(1)"
+            [disabled]="currentPageCNH === 1">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn" 
+            (click)="changePageCNH(currentPageCNH - 1)"
+            [disabled]="currentPageCNH === 1">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <button 
+            *ngFor="let page of pagesCNH"
+            class="pagination-btn"
+            [class.active]="page === currentPageCNH"
+            (click)="changePageCNH(page)">
+            {{ page }}
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageCNH(currentPageCNH + 1)"
+            [disabled]="currentPageCNH === totalPagesCNH">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageCNH(totalPagesCNH)"
+            [disabled]="currentPageCNH === totalPagesCNH">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </div>
         
-        <button 
-          class="pagination-btn"
-          (click)="changePageCNH(currentPageCNH + 1)"
-          [disabled]="currentPageCNH === totalPagesCNH">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-        
-        <span class="pagination-info">
+        <div class="pagination-right">
           Página {{ currentPageCNH }} de {{ totalPagesCNH }} ({{ totalItemsCNH }} itens)
-        </span>
+        </div>
       </div>
     </div>
-    
-    <!-- Estatísticas de Desempenho -->
-    <div class="section" *ngIf="report.driverStats && report.driverStats.length > 0">
-      <h2><i class="fas fa-chart-line"></i> Estatísticas de Desempenho ({{ totalItemsStats }})</h2>
+        
+        <div class="section" *ngIf="activeTab === 'stats' && report.driverStats && report.driverStats.length > 0">
+          <div class="section-header">
+            <h2><i class="fas fa-chart-line"></i> Estatísticas de Desempenho</h2>
+            <span class="record-count">Mostrando {{ paginatedStats.length }} de {{ totalItemsStats }} motoristas</span>
+          </div>
       <div class="table-container">
         <table>
           <thead>
@@ -156,32 +202,57 @@
         </table>
       </div>
       
-      <div class="pagination" *ngIf="totalPagesStats > 1">
-        <button 
-          class="pagination-btn" 
-          (click)="changePageStats(currentPageStats - 1)"
-          [disabled]="currentPageStats === 1">
-          <i class="fas fa-chevron-left"></i>
-        </button>
+      <div class="pagination-wrapper" *ngIf="totalPagesStats > 1 || totalItemsStats > 5">
+        <div class="pagination-left">
+          <label>Itens por página:</label>
+          <select class="page-size-select" [(ngModel)]="itemsPerPageStats" (change)="onPageSizeChangeStats($event)">
+            <option *ngFor="let size of pageSizeOptionsStats" [value]="size">{{ size }}</option>
+          </select>
+        </div>
         
-        <button 
-          *ngFor="let page of pagesStats"
-          class="pagination-btn"
-          [class.active]="page === currentPageStats"
-          (click)="changePageStats(page)">
-          {{ page }}
-        </button>
+        <div class="pagination-center">
+          <button 
+            class="pagination-btn" 
+            (click)="changePageStats(1)"
+            [disabled]="currentPageStats === 1">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn" 
+            (click)="changePageStats(currentPageStats - 1)"
+            [disabled]="currentPageStats === 1">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <button 
+            *ngFor="let page of pagesStats"
+            class="pagination-btn"
+            [class.active]="page === currentPageStats"
+            (click)="changePageStats(page)">
+            {{ page }}
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageStats(currentPageStats + 1)"
+            [disabled]="currentPageStats === totalPagesStats">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageStats(totalPagesStats)"
+            [disabled]="currentPageStats === totalPagesStats">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </div>
         
-        <button 
-          class="pagination-btn"
-          (click)="changePageStats(currentPageStats + 1)"
-          [disabled]="currentPageStats === totalPagesStats">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-        
-        <span class="pagination-info">
+        <div class="pagination-right">
           Página {{ currentPageStats }} de {{ totalPagesStats }} ({{ totalItemsStats }} itens)
-        </span>
+        </div>
+      </div>
+    </div>
       </div>
     </div>
   </div>

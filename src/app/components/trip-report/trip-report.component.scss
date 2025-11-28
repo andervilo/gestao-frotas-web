@@ -96,12 +96,96 @@
       }
     }
 
+    .tabs-container {
+      margin-top: 20px;
+
+      .tabs-header {
+        display: flex;
+        gap: 10px;
+        border-bottom: 2px solid #dee2e6;
+        margin-bottom: 0;
+        padding: 0;
+        background: white;
+        border-radius: 8px 8px 0 0;
+        overflow-x: auto;
+
+        .tab-btn {
+          padding: 12px 20px;
+          background: transparent;
+          border: none;
+          border-bottom: 3px solid transparent;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 500;
+          color: #666;
+          transition: all 0.3s;
+          white-space: nowrap;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          i {
+            font-size: 16px;
+          }
+
+          &:hover {
+            color: #1976d2;
+            background: #f8f9fa;
+          }
+
+          &.active {
+            color: #1976d2;
+            border-bottom-color: #1976d2;
+            background: #f8f9fa;
+          }
+        }
+      }
+
+      .tab-content {
+        background: white;
+        border-radius: 0 0 8px 8px;
+        padding: 0;
+      }
+    }
+
     .section {
       background: white;
       border-radius: 8px;
       padding: 20px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+
+        h2 {
+          margin: 0;
+          font-size: 18px;
+          color: #212529;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          i {
+            color: #1976d2;
+          }
+        }
+
+        .record-count {
+          font-size: 14px;
+          color: #666;
+          background: #f8f9fa;
+          padding: 6px 12px;
+          border-radius: 4px;
+          font-weight: 500;
+        }
+      }
 
       h2 {
         margin: 0 0 15px 0;
@@ -117,30 +201,32 @@
           border-collapse: collapse;
 
           thead {
-            background: #f5f5f5;
+            background: #f8f9fa;
 
             th {
-              padding: 12px;
+              padding: 12px 16px;
               text-align: left;
               font-weight: 600;
-              color: #666;
+              color: #212529;
               font-size: 14px;
-              border-bottom: 2px solid #ddd;
+              border-bottom: 2px solid #dee2e6;
+              white-space: nowrap;
             }
           }
 
           tbody {
             tr {
-              border-bottom: 1px solid #eee;
+              border-bottom: 1px solid #dee2e6;
+              transition: background-color 0.2s;
 
               &:hover {
-                background: #f9f9f9;
+                background: #f8f9fa;
               }
 
               td {
-                padding: 12px;
+                padding: 12px 16px;
                 font-size: 14px;
-                color: #333;
+                color: #212529;
               }
             }
           }
@@ -149,16 +235,16 @@
     }
   }
 
-  .pagination {
+  .pagination-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
     padding: 20px 0;
     margin-top: 20px;
     flex-wrap: wrap;
+    gap: 15px;
 
-    .pagination-controls {
+    .pagination-left {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -175,61 +261,62 @@
         border-radius: 4px;
         font-size: 14px;
         cursor: pointer;
-        background-color: white;
-        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2210%22%20height%3D%225%22%20viewBox%3D%220%200%2010%205%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M0%200l5%205%205-5z%22%20fill%3D%22%23666%22/%3E%3C/svg%3E');
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        background-size: 10px;
+        background: white;
         appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+
+        &:hover {
+          border-color: #1976d2;
+        }
 
         &:focus {
           outline: none;
           border-color: #1976d2;
+          box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
         }
       }
     }
 
-    .pagination-buttons {
+    .pagination-center {
       display: flex;
+      gap: 8px;
       align-items: center;
-      gap: 5px;
-    }
 
-    .pagination-btn {
-      min-width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-      background: white;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
-      color: #666;
+      .pagination-btn {
+        min-width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
 
-      &:hover:not(:disabled) {
-        background: #f5f5f5;
-        border-color: #1976d2;
-        color: #1976d2;
-      }
+        &:hover:not(:disabled) {
+          background: #f5f5f5;
+          border-color: #1976d2;
+        }
 
-      &.active {
-        background: #1976d2;
-        color: white;
-        border-color: #1976d2;
-      }
+        &.active {
+          background: #1976d2;
+          color: white;
+          border-color: #1976d2;
+        }
 
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        color: #ccc;
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
       }
     }
 
-    .pagination-info {
+    .pagination-right {
       font-size: 14px;
       color: #666;
       white-space: nowrap;

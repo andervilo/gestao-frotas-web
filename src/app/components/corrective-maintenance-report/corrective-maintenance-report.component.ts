@@ -17,25 +17,26 @@ export class CorrectiveMaintenanceReportComponent implements OnInit {
   report: CorrectiveMaintenanceReport | null = null;
   loading: boolean = false;
   error: string = '';
+  activeTab: string = 'overdue';
 
   // Pagination for overdue
   currentPageOverdue = 1;
-  itemsPerPageOverdue = 10;
+  itemsPerPageOverdue = 5;
   pageSizeOptionsOverdue = [5, 10, 25, 50, 100];
 
   // Pagination for upcoming
   currentPageUpcoming = 1;
-  itemsPerPageUpcoming = 10;
+  itemsPerPageUpcoming = 5;
   pageSizeOptionsUpcoming = [5, 10, 25, 50, 100];
 
   // Pagination for top vehicles
   currentPageTopVehicles = 1;
-  itemsPerPageTopVehicles = 10;
+  itemsPerPageTopVehicles = 5;
   pageSizeOptionsTopVehicles = [5, 10, 25, 50, 100];
 
   // Pagination for corrective history
   currentPageHistory = 1;
-  itemsPerPageHistory = 10;
+  itemsPerPageHistory = 5;
   pageSizeOptionsHistory = [5, 10, 25, 50, 100];
 
   constructor(private reportService: ReportService) {}
@@ -48,6 +49,9 @@ export class CorrectiveMaintenanceReportComponent implements OnInit {
     
     this.startDate = thirtyDaysAgo.toISOString().split('T')[0];
     this.endDate = today.toISOString().split('T')[0];
+    
+    // Gera o relatório automaticamente ao carregar a página
+    this.generateReport();
   }
 
   generateReport(): void {
@@ -64,6 +68,16 @@ export class CorrectiveMaintenanceReportComponent implements OnInit {
         next: (data) => {
           this.report = data;
           this.loading = false;
+          // Define a primeira aba disponível como ativa
+          if (data.overdueCorrective && data.overdueCorrective.length > 0) {
+            this.activeTab = 'overdue';
+          } else if (data.upcomingCorrective && data.upcomingCorrective.length > 0) {
+            this.activeTab = 'upcoming';
+          } else if (data.topVehicles && data.topVehicles.length > 0) {
+            this.activeTab = 'topVehicles';
+          } else {
+            this.activeTab = 'history';
+          }
         },
         error: (err) => {
           this.error = 'Erro ao gerar relatório: ' + (err.message || 'Erro desconhecido');
