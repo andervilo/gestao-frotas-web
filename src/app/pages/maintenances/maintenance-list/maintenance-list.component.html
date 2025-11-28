@@ -174,6 +174,12 @@
           </td>
           <td class="actions">
             <button 
+              (click)="viewMaintenance(maintenance)"
+              class="btn btn-sm btn-info"
+              title="Visualizar">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button 
               *ngIf="canStart(maintenance)"
               (click)="openActionModal('start', maintenance)" 
               class="btn btn-sm btn-primary"
@@ -337,6 +343,93 @@
         [disabled]="modalAction === 'complete' && completeForm.finalCost <= 0 || 
                     modalAction === 'cancel' && !cancelForm.reason.trim()">
         {{ modalAction === 'start' ? 'Iniciar' : modalAction === 'complete' ? 'Concluir' : 'Cancelar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Visualização -->
+<div class="modal-overlay" *ngIf="showViewModal" (click)="closeViewModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2><i class="fas fa-tools"></i> Detalhes da Manutenção</h2>
+      <button class="btn-close" (click)="closeViewModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body" *ngIf="selectedViewMaintenance">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label><i class="fas fa-hashtag"></i> ID:</label>
+          <span class="value">{{ selectedViewMaintenance.id || 'N/A' }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-car"></i> Veículo:</label>
+          <span class="value">{{ getVehicleInfo(selectedViewMaintenance.vehicleId) }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-wrench"></i> Tipo:</label>
+          <span class="value">{{ getTypeLabel(selectedViewMaintenance.type) }}</span>
+        </div>
+        
+        <div class="detail-item full-width">
+          <label><i class="fas fa-file-alt"></i> Descrição:</label>
+          <span class="value">{{ selectedViewMaintenance.description }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedViewMaintenance.cost">
+          <label><i class="fas fa-dollar-sign"></i> Custo:</label>
+          <span class="value">R$ {{ selectedViewMaintenance.cost | number:'1.2-2' }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-calendar-alt"></i> Data Agendada:</label>
+          <span class="value">{{ selectedViewMaintenance.scheduledDate | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedViewMaintenance.startDate">
+          <label><i class="fas fa-calendar-check"></i> Data Início:</label>
+          <span class="value">{{ selectedViewMaintenance.startDate | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedViewMaintenance.completionDate">
+          <label><i class="fas fa-calendar-times"></i> Data Conclusão:</label>
+          <span class="value">{{ selectedViewMaintenance.completionDate | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-info-circle"></i> Status:</label>
+          <span class="status" [ngClass]="getStatusClass(selectedViewMaintenance.status)">
+            {{ getStatusLabel(selectedViewMaintenance.status) }}
+          </span>
+        </div>
+        
+        <div class="detail-item full-width" *ngIf="selectedViewMaintenance.notes">
+          <label><i class="fas fa-sticky-note"></i> Observações:</label>
+          <span class="value">{{ selectedViewMaintenance.notes }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedViewMaintenance.createdAt">
+          <label><i class="fas fa-calendar-plus"></i> Criado em:</label>
+          <span class="value">{{ selectedViewMaintenance.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedViewMaintenance.updatedAt">
+          <label><i class="fas fa-calendar-check"></i> Atualizado em:</label>
+          <span class="value">{{ selectedViewMaintenance.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeViewModal()">
+        <i class="fas fa-times"></i> Fechar
+      </button>
+      <button class="btn btn-primary" (click)="closeViewModal()" [routerLink]="['/maintenances', selectedViewMaintenance?.id, 'edit']">
+        <i class="fas fa-edit"></i> Editar
       </button>
     </div>
   </div>

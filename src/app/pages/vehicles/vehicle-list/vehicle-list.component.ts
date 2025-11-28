@@ -33,6 +33,10 @@ export class VehicleListComponent implements OnInit {
   filters: VehicleFilter = {};
   showFilters = false;
 
+  // Modal
+  showModal = false;
+  selectedVehicle: Vehicle | null = null;
+
   VehicleStatus = VehicleStatus;
   VehicleType = VehicleType;
 
@@ -183,5 +187,15 @@ export class VehicleListComponent implements OnInit {
       default:
         return '-';
     }
+  }
+
+  viewVehicle(vehicle: Vehicle): void {
+    this.selectedVehicle = vehicle;
+    this.showModal = true;
+  }
+
+  closeModal(): void {
+    this.showModal = false;
+    this.selectedVehicle = null;
   }
 }

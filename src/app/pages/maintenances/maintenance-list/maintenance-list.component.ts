@@ -52,6 +52,10 @@ export class MaintenanceListComponent implements OnInit {
     reason: ''
   };
 
+  // Modal de visualização
+  showViewModal = false;
+  selectedViewMaintenance: Maintenance | null = null;
+
   constructor(
     private maintenanceService: MaintenanceService,
     private vehicleService: VehicleService
@@ -290,5 +294,15 @@ export class MaintenanceListComponent implements OnInit {
       return `${vehicle.licensePlate} - ${vehicle.brand} ${vehicle.model}`;
     }
     return vehicleId;
+  }
+
+  viewMaintenance(maintenance: Maintenance): void {
+    this.selectedViewMaintenance = maintenance;
+    this.showViewModal = true;
+  }
+
+  closeViewModal(): void {
+    this.showViewModal = false;
+    this.selectedViewMaintenance = null;
   }
 }

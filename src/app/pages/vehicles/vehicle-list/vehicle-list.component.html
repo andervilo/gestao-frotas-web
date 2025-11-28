@@ -130,6 +130,12 @@
           <td>{{ vehicle.currentMileage | number }} km</td>
           <td class="actions">
             <button 
+              (click)="viewVehicle(vehicle)" 
+              class="btn btn-sm btn-info"
+              title="Visualizar">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button 
               [routerLink]="['/vehicles', vehicle.id, 'edit']" 
               class="btn btn-sm btn-secondary"
               title="Editar">
@@ -194,6 +200,78 @@
       <span class="page-info">
         Página {{ currentPage + 1 }} de {{ totalPages }}
       </span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Visualização -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2><i class="fas fa-car"></i> Detalhes do Veículo</h2>
+      <button class="btn-close" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body" *ngIf="selectedVehicle">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label><i class="fas fa-id-card"></i> Placa:</label>
+          <span class="value">{{ selectedVehicle.licensePlate }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-car-side"></i> Tipo:</label>
+          <span class="value">{{ getTypeLabel(selectedVehicle.type) }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-industry"></i> Marca:</label>
+          <span class="value">{{ selectedVehicle.brand }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-car"></i> Modelo:</label>
+          <span class="value">{{ selectedVehicle.model }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-calendar"></i> Ano:</label>
+          <span class="value">{{ selectedVehicle.year }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-info-circle"></i> Status:</label>
+          <span class="status" [ngClass]="getStatusClass(selectedVehicle.status)">
+            {{ getStatusLabel(selectedVehicle.status) }}
+          </span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-tachometer-alt"></i> Km Atual:</label>
+          <span class="value">{{ selectedVehicle.currentMileage | number }} km</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedVehicle.createdAt">
+          <label><i class="fas fa-calendar-plus"></i> Criado em:</label>
+          <span class="value">{{ selectedVehicle.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedVehicle.updatedAt">
+          <label><i class="fas fa-calendar-check"></i> Atualizado em:</label>
+          <span class="value">{{ selectedVehicle.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">
+        <i class="fas fa-times"></i> Fechar
+      </button>
+      <button class="btn btn-primary" [routerLink]="['/vehicles', selectedVehicle?.id, 'edit']" (click)="closeModal()">
+        <i class="fas fa-edit"></i> Editar
+      </button>
     </div>
   </div>
 </div>

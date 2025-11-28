@@ -32,6 +32,10 @@ export class DriverListComponent implements OnInit {
   filters: DriverFilter = {};
   showFilters = false;
 
+  // Modal
+  showModal = false;
+  selectedDriver: Driver | null = null;
+
   DriverStatus = DriverStatus;
 
   constructor(private driverService: DriverService) {}
@@ -168,5 +172,15 @@ export class DriverListComponent implements OnInit {
 
   isCnhExpired(expirationDate: string): boolean {
     return new Date(expirationDate) < new Date();
+  }
+
+  viewDriver(driver: Driver): void {
+    this.selectedDriver = driver;
+    this.showModal = true;
+  }
+
+  closeModal(): void {
+    this.showModal = false;
+    this.selectedDriver = null;
   }
 }

@@ -160,6 +160,12 @@
           </td>
           <td class="actions">
             <button 
+              (click)="viewTrip(trip)"
+              class="btn btn-sm btn-info"
+              title="Visualizar">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button 
               *ngIf="canCompleteTrip(trip)"
               (click)="openCompleteModal(trip)" 
               class="btn btn-sm btn-success"
@@ -280,6 +286,103 @@
         (click)="completeTrip()"
         [disabled]="completeForm.endMileage <= (selectedTrip?.startMileage || 0)">
         Finalizar Viagem
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Visualização -->
+<div class="modal-overlay" *ngIf="showViewModal" (click)="closeViewModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2><i class="fas fa-route"></i> Detalhes da Viagem</h2>
+      <button class="btn-close" (click)="closeViewModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body" *ngIf="selectedViewTrip">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label><i class="fas fa-hashtag"></i> ID:</label>
+          <span class="value">{{ selectedViewTrip.id || 'N/A' }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-map-marker-alt"></i> Origem:</label>
+          <span class="value">{{ selectedViewTrip.origin }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-flag-checkered"></i> Destino:</label>
+          <span class="value">{{ selectedViewTrip.destination }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-car"></i> Veículo:</label>
+          <span class="value">{{ getVehicleInfo(selectedViewTrip.vehicleId) }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-user"></i> Motorista:</label>
+          <span class="value">{{ getDriverInfo(selectedViewTrip.driverId) }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-calendar-check"></i> Início:</label>
+          <span class="value">{{ selectedViewTrip.startDateTime ? (selectedViewTrip.startDateTime | date: 'dd/MM/yyyy HH:mm') : 'N/A' }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-calendar-times"></i> Fim:</label>
+          <span class="value">{{ selectedViewTrip.endDateTime ? (selectedViewTrip.endDateTime | date: 'dd/MM/yyyy HH:mm') : 'Em andamento' }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-tachometer-alt"></i> Km Inicial:</label>
+          <span class="value">{{ selectedViewTrip.startMileage | number }} km</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedViewTrip.endMileage">
+          <label><i class="fas fa-tachometer-alt"></i> Km Final:</label>
+          <span class="value">{{ selectedViewTrip.endMileage | number }} km</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedViewTrip.distanceTraveled">
+          <label><i class="fas fa-road"></i> Distância Percorrida:</label>
+          <span class="value">{{ selectedViewTrip.distanceTraveled | number }} km</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-info-circle"></i> Status:</label>
+          <span class="status" [ngClass]="getTripStatusClass(selectedViewTrip)">
+            {{ getTripStatus(selectedViewTrip) }}
+          </span>
+        </div>
+        
+        <div class="detail-item full-width" *ngIf="selectedViewTrip.notes">
+          <label><i class="fas fa-sticky-note"></i> Observações:</label>
+          <span class="value">{{ selectedViewTrip.notes }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedViewTrip.createdAt">
+          <label><i class="fas fa-calendar-plus"></i> Criado em:</label>
+          <span class="value">{{ selectedViewTrip.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedViewTrip.updatedAt">
+          <label><i class="fas fa-calendar-check"></i> Atualizado em:</label>
+          <span class="value">{{ selectedViewTrip.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeViewModal()">
+        <i class="fas fa-times"></i> Fechar
+      </button>
+      <button class="btn btn-primary" (click)="closeViewModal()" [routerLink]="['/trips', selectedViewTrip?.id, 'edit']">
+        <i class="fas fa-edit"></i> Editar
       </button>
     </div>
   </div>

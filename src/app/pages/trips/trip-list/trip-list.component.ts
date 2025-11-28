@@ -43,6 +43,10 @@ export class TripListComponent implements OnInit {
     notes: ''
   };
 
+  // Modal de visualização
+  showViewModal = false;
+  selectedViewTrip: Trip | null = null;
+
   constructor(
     private tripService: TripService,
     private vehicleService: VehicleService,
@@ -224,5 +228,15 @@ export class TripListComponent implements OnInit {
       return `${driver.name} - CNH: ${driver.cnh}`;
     }
     return driverId;
+  }
+
+  viewTrip(trip: Trip): void {
+    this.selectedViewTrip = trip;
+    this.showViewModal = true;
+  }
+
+  closeViewModal(): void {
+    this.showViewModal = false;
+    this.selectedViewTrip = null;
   }
 }

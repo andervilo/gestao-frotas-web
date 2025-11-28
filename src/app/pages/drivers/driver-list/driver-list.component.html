@@ -147,6 +147,12 @@
           </td>
           <td class="actions">
             <button 
+              (click)="viewDriver(driver)"
+              class="btn btn-sm btn-info"
+              title="Visualizar">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button 
               [routerLink]="['/drivers', driver.id, 'edit']" 
               class="btn btn-sm btn-secondary"
               title="Editar">
@@ -211,6 +217,81 @@
       <span class="page-info">
         Página {{ currentPage + 1 }} de {{ totalPages }}
       </span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Visualização -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2><i class="fas fa-user"></i> Detalhes do Motorista</h2>
+      <button class="btn-close" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body" *ngIf="selectedDriver">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label><i class="fas fa-hashtag"></i> ID:</label>
+          <span class="value">{{ selectedDriver.id || 'N/A' }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-user"></i> Nome:</label>
+          <span class="value">{{ selectedDriver.name }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-id-card"></i> CPF:</label>
+          <span class="value">{{ selectedDriver.cpf }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-id-card-alt"></i> CNH:</label>
+          <span class="value">{{ selectedDriver.cnh }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-certificate"></i> Categoria CNH:</label>
+          <span class="value">{{ selectedDriver.cnhCategory }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-calendar-times"></i> Vencimento CNH:</label>
+          <span class="value" [class.text-danger]="isCnhExpired(selectedDriver.cnhExpirationDate)">
+            {{ selectedDriver.cnhExpirationDate | date: 'dd/MM/yyyy' }}
+            <i class="fas fa-exclamation-triangle text-danger" *ngIf="isCnhExpired(selectedDriver.cnhExpirationDate)"></i>
+          </span>
+        </div>
+        
+        <div class="detail-item">
+          <label><i class="fas fa-info-circle"></i> Status:</label>
+          <span class="status" [ngClass]="getStatusClass(selectedDriver.status)">
+            {{ getStatusLabel(selectedDriver.status) }}
+          </span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedDriver.createdAt">
+          <label><i class="fas fa-calendar-plus"></i> Criado em:</label>
+          <span class="value">{{ selectedDriver.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedDriver.updatedAt">
+          <label><i class="fas fa-calendar-check"></i> Atualizado em:</label>
+          <span class="value">{{ selectedDriver.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">
+        <i class="fas fa-times"></i> Fechar
+      </button>
+      <button class="btn btn-primary" (click)="closeModal()" [routerLink]="['/drivers', selectedDriver?.id, 'edit']">
+        <i class="fas fa-edit"></i> Editar
+      </button>
     </div>
   </div>
 </div>
