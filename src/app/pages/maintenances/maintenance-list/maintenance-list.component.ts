@@ -6,6 +6,7 @@ import { Maintenance, MaintenanceStatus, MaintenanceType } from '../../../models
 import { MaintenanceService } from '../../../services/maintenance.service';
 import { Vehicle } from '../../../models/vehicle.model';
 import { VehicleService } from '../../../services/vehicle.service';
+import { PagedResponse } from '../../../models/driver.model';
 
 @Component({
   selector: 'app-maintenance-list',
@@ -53,8 +54,8 @@ export class MaintenanceListComponent implements OnInit {
 
   loadVehicles(): void {
     this.vehicleService.getAll().subscribe({
-      next: (data: Vehicle[]) => {
-        this.vehicles = data;
+      next: (response: PagedResponse<Vehicle>) => {
+        this.vehicles = response.content;
       },
       error: (err: any) => {
         console.error('Erro ao carregar veículos', err);

@@ -25,3 +25,11 @@ export interface Vehicle {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface VehicleFilter {
+  licensePlate?: string;
+  brand?: string;
+  model?: string;
+  yearFrom?: number;
+  yearTo?: number;
+}

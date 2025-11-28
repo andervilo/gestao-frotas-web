@@ -47,8 +47,8 @@ export class TripListComponent implements OnInit {
 
   loadVehicles(): void {
     this.vehicleService.getAll().subscribe({
-      next: (data: Vehicle[]) => {
-        this.vehicles = data;
+      next: (response: PagedResponse<Vehicle>) => {
+        this.vehicles = response.content;
       },
       error: (err: any) => {
         console.error('Erro ao carregar veículos', err);

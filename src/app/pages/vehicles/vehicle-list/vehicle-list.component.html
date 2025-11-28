@@ -1,23 +1,115 @@
 <div class="vehicle-list">
   <div class="header">
     <h1>Veículos</h1>
-    <button routerLink="/vehicles/new" class="btn btn-primary">
-      <i class="fas fa-plus"></i> Novo Veículo
-    </button>
+    <div class="header-actions">
+      <button (click)="toggleFilters()" class="btn btn-secondary">
+        <i class="fas fa-filter"></i> {{ showFilters ? 'Ocultar Filtros' : 'Filtrar' }}
+      </button>
+      <button routerLink="/vehicles/new" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Novo Veículo
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters" *ngIf="showFilters">
+    <div class="filter-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="filterLicensePlate">Placa</label>
+          <input 
+            type="text" 
+            id="filterLicensePlate" 
+            [(ngModel)]="filters.licensePlate" 
+            placeholder="Placa do veículo"
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="filterBrand">Marca</label>
+          <input 
+            type="text" 
+            id="filterBrand" 
+            [(ngModel)]="filters.brand" 
+            placeholder="Marca"
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="filterModel">Modelo</label>
+          <input 
+            type="text" 
+            id="filterModel" 
+            [(ngModel)]="filters.model" 
+            placeholder="Modelo"
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="filterYearFrom">Ano (De)</label>
+          <input 
+            type="number" 
+            id="filterYearFrom" 
+            [(ngModel)]="filters.yearFrom" 
+            placeholder="Ano inicial"
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="filterYearTo">Ano (Até)</label>
+          <input 
+            type="number" 
+            id="filterYearTo" 
+            [(ngModel)]="filters.yearTo" 
+            placeholder="Ano final"
+            class="form-control">
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button (click)="applyFilters()" class="btn btn-primary">
+          <i class="fas fa-search"></i> Buscar
+        </button>
+        <button (click)="clearFilters()" class="btn btn-secondary">
+          <i class="fas fa-times"></i> Limpar
+        </button>
+      </div>
+    </div>
   </div>
 
   <div *ngIf="loading" class="loading">Carregando...</div>
   <div *ngIf="error" class="error">{{ error }}</div>
 
   <div class="table-container" *ngIf="!loading && !error">
+    <!-- Informações de paginação -->
+    <div class="pagination-info">
+      <div class="results-info">
+        Mostrando {{ vehicles.length }} de {{ totalElements }} veículos
+      </div>
+      <div class="page-size-selector">
+        <label for="pageSize">Itens por página:</label>
+        <select id="pageSize" [(ngModel)]="pageSize" (change)="changePageSize()" class="form-control">
+          <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+        </select>
+      </div>
+    </div>
+
     <table>
       <thead>
         <tr>
-          <th>Placa</th>
+          <th (click)="sort('licensePlate')" class="sortable">
+            Placa <i [class]="getSortIcon('licensePlate')"></i>
+          </th>
           <th>Tipo</th>
-          <th>Marca</th>
-          <th>Modelo</th>
-          <th>Ano</th>
+          <th (click)="sort('brand')" class="sortable">
+            Marca <i [class]="getSortIcon('brand')"></i>
+          </th>
+          <th (click)="sort('model')" class="sortable">
+            Modelo <i [class]="getSortIcon('model')"></i>
+          </th>
+          <th (click)="sort('year')" class="sortable">
+            Ano <i [class]="getSortIcon('year')"></i>
+          </th>
           <th>Status</th>
           <th>Km Atual</th>
           <th>Ações</th>
@@ -52,9 +144,56 @@
           </td>
         </tr>
         <tr *ngIf="vehicles.length === 0">
-          <td colspan="8" class="text-center">Nenhum veículo cadastrado</td>
+          <td colspan="8" class="text-center">Nenhum veículo encontrado</td>
         </tr>
       </tbody>
     </table>
+
+    <!-- Paginação -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button 
+        (click)="changePage(0)" 
+        [disabled]="currentPage === 0"
+        class="btn btn-sm btn-secondary"
+        title="Primeira página">
+        <i class="fas fa-angle-double-left"></i>
+      </button>
+      
+      <button 
+        (click)="changePage(currentPage - 1)" 
+        [disabled]="currentPage === 0"
+        class="btn btn-sm btn-secondary"
+        title="Página anterior">
+        <i class="fas fa-angle-left"></i>
+      </button>
+
+      <button 
+        *ngFor="let page of getPageNumbers()" 
+        (click)="changePage(page)"
+        [class.active]="currentPage === page"
+        class="btn btn-sm btn-secondary page-number">
+        {{ page + 1 }}
+      </button>
+
+      <button 
+        (click)="changePage(currentPage + 1)" 
+        [disabled]="currentPage === totalPages - 1"
+        class="btn btn-sm btn-secondary"
+        title="Próxima página">
+        <i class="fas fa-angle-right"></i>
+      </button>
+
+      <button 
+        (click)="changePage(totalPages - 1)" 
+        [disabled]="currentPage === totalPages - 1"
+        class="btn btn-sm btn-secondary"
+        title="Última página">
+        <i class="fas fa-angle-double-right"></i>
+      </button>
+
+      <span class="page-info">
+        Página {{ currentPage + 1 }} de {{ totalPages }}
+      </span>
+    </div>
   </div>
 </div>

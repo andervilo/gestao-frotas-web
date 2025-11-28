@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Vehicle } from '../models/vehicle.model';
+import { Vehicle, VehicleFilter } from '../models/vehicle.model';
+import { PagedResponse } from '../models/driver.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +12,37 @@ export class VehicleService {
 
   constructor(private http: HttpClient) { }
 
-  getAll(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(this.apiUrl);
+  getAll(
+    filter?: VehicleFilter,
+    page: number = 0,
+    size: number = 20,
+    sort: string = 'licensePlate',
+    direction: string = 'asc'
+  ): Observable<PagedResponse<Vehicle>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sort', `${sort},${direction}`);
+
+    if (filter) {
+      if (filter.licensePlate) {
+        params = params.set('licensePlate', filter.licensePlate);
+      }
+      if (filter.brand) {
+        params = params.set('brand', filter.brand);
+      }
+      if (filter.model) {
+        params = params.set('model', filter.model);
+      }
+      if (filter.yearFrom) {
+        params = params.set('yearFrom', filter.yearFrom.toString());
+      }
+      if (filter.yearTo) {
+        params = params.set('yearTo', filter.yearTo.toString());
+      }
+    }
+
+    return this.http.get<PagedResponse<Vehicle>>(this.apiUrl, { params });
   }
 
   getById(id: string): Observable<Vehicle> {
