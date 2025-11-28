@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Trip } from '../models/trip.model';
+import { Trip, TripFilter } from '../models/trip.model';
+import { PagedResponse } from '../models/driver.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +12,42 @@ export class TripService {
 
   constructor(private http: HttpClient) { }
 
-  getAll(): Observable<Trip[]> {
-    return this.http.get<Trip[]>(this.apiUrl);
+  getAll(
+    filter: TripFilter = {},
+    page: number = 0,
+    size: number = 10,
+    sortBy: string = 'startDateTime',
+    direction: string = 'DESC'
+  ): Observable<PagedResponse<Trip>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sortBy', sortBy)
+      .set('direction', direction);
+
+    if (filter.vehicleId) {
+      params = params.set('vehicleId', filter.vehicleId);
+    }
+    if (filter.driverId) {
+      params = params.set('driverId', filter.driverId);
+    }
+    if (filter.destination) {
+      params = params.set('destination', filter.destination);
+    }
+    if (filter.startDateFrom) {
+      params = params.set('startDateFrom', filter.startDateFrom);
+    }
+    if (filter.startDateTo) {
+      params = params.set('startDateTo', filter.startDateTo);
+    }
+    if (filter.endDateFrom) {
+      params = params.set('endDateFrom', filter.endDateFrom);
+    }
+    if (filter.endDateTo) {
+      params = params.set('endDateTo', filter.endDateTo);
+    }
+
+    return this.http.get<PagedResponse<Trip>>(this.apiUrl, { params });
   }
 
   getById(id: string): Observable<Trip> {

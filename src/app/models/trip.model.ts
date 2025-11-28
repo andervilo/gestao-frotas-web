@@ -13,3 +13,13 @@ export interface Trip {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface TripFilter {
+  vehicleId?: string;
+  driverId?: string;
+  destination?: string;
+  startDateFrom?: string;
+  startDateTo?: string;
+  endDateFrom?: string;
+  endDateTo?: string;
+}

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Trip } from '../../../models/trip.model';
+import { Trip, TripFilter } from '../../../models/trip.model';
 import { TripService } from '../../../services/trip.service';
 import { Vehicle } from '../../../models/vehicle.model';
 import { VehicleService } from '../../../services/vehicle.service';
@@ -22,8 +22,18 @@ export class TripListComponent implements OnInit {
   drivers: Driver[] = [];
   loading = false;
   error: string | null = null;
-  filterStatus: 'all' | 'scheduled' | 'in-progress' | 'completed' = 'all';
-  selectedVehicleId: string = '';
+  showFilters = false;
+  
+  // Paginação
+  currentPage = 0;
+  pageSize = 10;
+  totalPages = 0;
+  totalElements = 0;
+  
+  // Filtros
+  filter: TripFilter = {};
+  sortBy = 'startDateTime';
+  direction = 'DESC';
   
   // Modal para completar viagem
   showCompleteModal = false;
@@ -71,24 +81,11 @@ export class TripListComponent implements OnInit {
     this.loading = true;
     this.error = null;
     
-    let request;
-    
-    // Filtro por veículo tem prioridade
-    if (this.selectedVehicleId) {
-      request = this.tripService.getByVehicleId(this.selectedVehicleId);
-    } else if (this.filterStatus === 'scheduled') {
-      request = this.tripService.getScheduledTrips();
-    } else if (this.filterStatus === 'in-progress') {
-      request = this.tripService.getInProgressTrips();
-    } else if (this.filterStatus === 'completed') {
-      request = this.tripService.getCompletedTrips();
-    } else {
-      request = this.tripService.getAll();
-    }
-    
-    request.subscribe({
-      next: (data: Trip[]) => {
-        this.trips = data;
+    this.tripService.getAll(this.filter, this.currentPage, this.pageSize, this.sortBy, this.direction).subscribe({
+      next: (response: PagedResponse<Trip>) => {
+        this.trips = response.content;
+        this.totalPages = response.totalPages;
+        this.totalElements = response.totalElements;
         this.loading = false;
       },
       error: (err: any) => {
@@ -99,26 +96,43 @@ export class TripListComponent implements OnInit {
     });
   }
 
-  filterByStatus(status: 'all' | 'scheduled' | 'in-progress' | 'completed'): void {
-    this.filterStatus = status;
-    this.selectedVehicleId = ''; // Limpar filtro de veículo
-    this.loadTrips();
-  }
-
-  onStatusChange(): void {
-    this.selectedVehicleId = '';
-    this.loadTrips();
-  }
-
-  filterByVehicle(): void {
-    this.filterStatus = 'all'; // Resetar filtro de status
+  applyFilters(): void {
+    this.currentPage = 0;
     this.loadTrips();
   }
 
   clearFilters(): void {
-    this.filterStatus = 'all';
-    this.selectedVehicleId = '';
+    this.filter = {};
+    this.currentPage = 0;
     this.loadTrips();
+  }
+
+  toggleFilters(): void {
+    this.showFilters = !this.showFilters;
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadTrips();
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 0;
+    this.loadTrips();
+  }
+
+  onSort(field: string): void {
+    if (this.sortBy === field) {
+      this.direction = this.direction === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.sortBy = field;
+      this.direction = 'ASC';
+    }
+    this.loadTrips();
+  }
+
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i);
   }
 
   deleteTrip(id: string): void {

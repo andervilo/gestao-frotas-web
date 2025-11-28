@@ -2,45 +2,96 @@
   <div class="header">
     <h1>Viagens</h1>
     <div class="header-actions">
-      <!-- Filtro de Status -->
-      <div class="filter-dropdown">
-        <label for="statusFilter">Status:</label>
-        <select id="statusFilter" [(ngModel)]="filterStatus" (change)="onStatusChange()">
-          <option value="all">Todas</option>
-          <option value="scheduled">Agendadas</option>
-          <option value="in-progress">Em Andamento</option>
-          <option value="completed">Finalizadas</option>
-        </select>
-      </div>
-
-      <!-- Filtro de Veículo -->
-      <div class="filter-dropdown">
-        <label for="vehicleFilter">Veículo:</label>
-        <select 
-          id="vehicleFilter"
-          [(ngModel)]="selectedVehicleId" 
-          (change)="filterByVehicle()"
-          class="form-select">
-          <option value="">Todos os Veículos</option>
-          <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
-            {{ vehicle.licensePlate }} - {{ vehicle.brand }} {{ vehicle.model }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Botão Limpar Filtros -->
-      <div class="filter-actions">
-        <button 
-          *ngIf="selectedVehicleId || filterStatus !== 'all'"
-          (click)="clearFilters()" 
-          class="btn btn-sm btn-outline"
-          title="Limpar Filtros">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
+      <button (click)="toggleFilters()" class="btn btn-secondary">
+        <i class="fas fa-filter"></i> {{ showFilters ? 'Ocultar Filtros' : 'Filtrar' }}
+      </button>
       <button routerLink="/trips/new" class="btn btn-primary">
         <i class="fas fa-plus"></i> Nova Viagem
       </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters" *ngIf="showFilters">
+    <div class="filter-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="filterVehicle">Veículo</label>
+          <select id="filterVehicle" [(ngModel)]="filter.vehicleId" class="form-control">
+            <option [value]="undefined">Todos</option>
+            <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
+              {{ vehicle.licensePlate }} - {{ vehicle.brand }} {{ vehicle.model }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="filterDriver">Motorista</label>
+          <select id="filterDriver" [(ngModel)]="filter.driverId" class="form-control">
+            <option [value]="undefined">Todos</option>
+            <option *ngFor="let driver of drivers" [value]="driver.id">
+              {{ driver.name }} - CNH: {{ driver.cnh }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="filterDestination">Destino</label>
+          <input 
+            type="text" 
+            id="filterDestination"
+            [(ngModel)]="filter.destination" 
+            placeholder="Filtrar por destino"
+            class="form-control">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="filterStartDateFrom">Data Início (De)</label>
+          <input 
+            type="datetime-local" 
+            id="filterStartDateFrom"
+            [(ngModel)]="filter.startDateFrom" 
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="filterStartDateTo">Data Início (Até)</label>
+          <input 
+            type="datetime-local" 
+            id="filterStartDateTo"
+            [(ngModel)]="filter.startDateTo" 
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="filterEndDateFrom">Data Fim (De)</label>
+          <input 
+            type="datetime-local" 
+            id="filterEndDateFrom"
+            [(ngModel)]="filter.endDateFrom" 
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="filterEndDateTo">Data Fim (Até)</label>
+          <input 
+            type="datetime-local" 
+            id="filterEndDateTo"
+            [(ngModel)]="filter.endDateTo" 
+            class="form-control">
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button (click)="applyFilters()" class="btn btn-primary">
+          <i class="fas fa-search"></i> Buscar
+        </button>
+        <button (click)="clearFilters()" class="btn btn-secondary">
+          <i class="fas fa-times"></i> Limpar
+        </button>
+      </div>
     </div>
   </div>
 
@@ -48,15 +99,43 @@
   <div *ngIf="error" class="error">{{ error }}</div>
 
   <div class="table-container" *ngIf="!loading && !error">
+    <!-- Informações de paginação -->
+    <div class="pagination-controls">
+      <div class="pagination-info">
+        Mostrando {{ trips.length }} de {{ totalElements }} viagens
+      </div>
+      <div class="page-size-selector">
+        <label for="pageSize">Itens por página:</label>
+        <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()" class="form-control">
+          <option [value]="5">5</option>
+          <option [value]="10">10</option>
+          <option [value]="20">20</option>
+          <option [value]="50">50</option>
+        </select>
+      </div>
+    </div>
+
     <table>
       <thead>
         <tr>
-          <th>Origem</th>
-          <th>Destino</th>
+          <th (click)="onSort('origin')" class="sortable">
+            Origem
+            <i class="fas" [ngClass]="sortBy === 'origin' ? (direction === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'"></i>
+          </th>
+          <th (click)="onSort('destination')" class="sortable">
+            Destino
+            <i class="fas" [ngClass]="sortBy === 'destination' ? (direction === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'"></i>
+          </th>
           <th>Veículo</th>
           <th>Motorista</th>
-          <th>Início</th>
-          <th>Fim</th>
+          <th (click)="onSort('startDateTime')" class="sortable">
+            Início
+            <i class="fas" [ngClass]="sortBy === 'startDateTime' ? (direction === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'"></i>
+          </th>
+          <th (click)="onSort('endDateTime')" class="sortable">
+            Fim
+            <i class="fas" [ngClass]="sortBy === 'endDateTime' ? (direction === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'"></i>
+          </th>
           <th>Distância</th>
           <th>Status</th>
           <th>Ações</th>
@@ -106,6 +185,49 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- Paginação -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button 
+        (click)="onPageChange(0)" 
+        [disabled]="currentPage === 0"
+        class="btn btn-sm btn-secondary"
+        title="Primeira página">
+        <i class="fas fa-angle-double-left"></i>
+      </button>
+      
+      <button 
+        (click)="onPageChange(currentPage - 1)" 
+        [disabled]="currentPage === 0"
+        class="btn btn-sm btn-secondary"
+        title="Página anterior">
+        <i class="fas fa-angle-left"></i>
+      </button>
+
+      <button 
+        *ngFor="let page of pages" 
+        (click)="onPageChange(page)"
+        [class.active]="currentPage === page"
+        class="btn btn-sm btn-secondary btn-page">
+        {{ page + 1 }}
+      </button>
+
+      <button 
+        (click)="onPageChange(currentPage + 1)" 
+        [disabled]="currentPage === totalPages - 1"
+        class="btn btn-sm btn-secondary"
+        title="Próxima página">
+        <i class="fas fa-angle-right"></i>
+      </button>
+
+      <button 
+        (click)="onPageChange(totalPages - 1)" 
+        [disabled]="currentPage === totalPages - 1"
+        class="btn btn-sm btn-secondary"
+        title="Última página">
+        <i class="fas fa-angle-double-right"></i>
+      </button>
+    </div>
   </div>
 </div>
 

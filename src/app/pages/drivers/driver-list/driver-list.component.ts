@@ -19,10 +19,10 @@ export class DriverListComponent implements OnInit {
 
   // Paginação
   currentPage = 0;
-  pageSize = 20;
+  pageSize = 10;
   totalPages = 0;
   totalElements = 0;
-  pageSizes = [10, 20, 50, 100];
+  pageSizes = [5, 10, 20, 50];
 
   // Ordenação
   sortField = 'name';
