@@ -18,6 +18,16 @@ export class DriverPerformanceReportComponent implements OnInit {
   
   startDate: string = '';
   endDate: string = '';
+
+  // Pagination for CNH expiring
+  currentPageCNH = 1;
+  itemsPerPageCNH = 10;
+  pageSizeOptionsCNH = [5, 10, 25, 50, 100];
+
+  // Pagination for driver stats
+  currentPageStats = 1;
+  itemsPerPageStats = 10;
+  pageSizeOptionsStats = [5, 10, 25, 50, 100];
   
   constructor(private reportService: ReportService) {}
   
@@ -86,5 +96,71 @@ export class DriverPerformanceReportComponent implements OnInit {
   
   private formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
+  }
+
+  // Pagination methods for CNH expiring
+  get paginatedCNH() {
+    if (!this.report?.cnhExpiring) return [];
+    const start = (this.currentPageCNH - 1) * this.itemsPerPageCNH;
+    const end = start + this.itemsPerPageCNH;
+    return this.report.cnhExpiring.slice(start, end);
+  }
+
+  get totalPagesCNH(): number {
+    if (!this.report?.cnhExpiring) return 0;
+    return Math.ceil(this.report.cnhExpiring.length / this.itemsPerPageCNH);
+  }
+
+  get totalItemsCNH(): number {
+    return this.report?.cnhExpiring?.length || 0;
+  }
+
+  get pagesCNH(): number[] {
+    return Array.from({ length: this.totalPagesCNH }, (_, i) => i + 1);
+  }
+
+  changePageCNH(page: number): void {
+    if (page >= 1 && page <= this.totalPagesCNH) {
+      this.currentPageCNH = page;
+    }
+  }
+
+  onPageSizeChangeCNH(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.itemsPerPageCNH = parseInt(target.value, 10);
+    this.currentPageCNH = 1;
+  }
+
+  // Pagination methods for driver stats
+  get paginatedStats() {
+    if (!this.report?.driverStats) return [];
+    const start = (this.currentPageStats - 1) * this.itemsPerPageStats;
+    const end = start + this.itemsPerPageStats;
+    return this.report.driverStats.slice(start, end);
+  }
+
+  get totalPagesStats(): number {
+    if (!this.report?.driverStats) return 0;
+    return Math.ceil(this.report.driverStats.length / this.itemsPerPageStats);
+  }
+
+  get totalItemsStats(): number {
+    return this.report?.driverStats?.length || 0;
+  }
+
+  get pagesStats(): number[] {
+    return Array.from({ length: this.totalPagesStats }, (_, i) => i + 1);
+  }
+
+  changePageStats(page: number): void {
+    if (page >= 1 && page <= this.totalPagesStats) {
+      this.currentPageStats = page;
+    }
+  }
+
+  onPageSizeChangeStats(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.itemsPerPageStats = parseInt(target.value, 10);
+    this.currentPageStats = 1;
   }
 }

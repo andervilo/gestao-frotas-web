@@ -76,7 +76,7 @@
     </div>
     
     <div class="section" *ngIf="report.topRoutes && report.topRoutes.length > 0">
-      <h2><i class="fas fa-map-marker-alt"></i> Rotas Mais Frequentes ({{ report.topRoutes.length }})</h2>
+      <h2><i class="fas fa-map-marker-alt"></i> Rotas Mais Frequentes ({{ totalItemsTopRoutes }})</h2>
       <div class="table-container">
         <table>
           <thead>
@@ -89,7 +89,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let route of report.topRoutes">
+            <tr *ngFor="let route of paginatedTopRoutes">
               <td><strong>{{ route.origin }}</strong></td>
               <td><strong>{{ route.destination }}</strong></td>
               <td>{{ route.tripCount }}</td>
@@ -98,6 +98,34 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      
+      <div class="pagination" *ngIf="totalPagesTopRoutes > 1">
+        <button 
+          class="pagination-btn" 
+          (click)="changePageTopRoutes(currentPageTopRoutes - 1)"
+          [disabled]="currentPageTopRoutes === 1">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <button 
+          *ngFor="let page of pagesTopRoutes"
+          class="pagination-btn"
+          [class.active]="page === currentPageTopRoutes"
+          (click)="changePageTopRoutes(page)">
+          {{ page }}
+        </button>
+        
+        <button 
+          class="pagination-btn"
+          (click)="changePageTopRoutes(currentPageTopRoutes + 1)"
+          [disabled]="currentPageTopRoutes === totalPagesTopRoutes">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        
+        <span class="pagination-info">
+          Página {{ currentPageTopRoutes }} de {{ totalPagesTopRoutes }} ({{ totalItemsTopRoutes }} itens)
+        </span>
       </div>
     </div>
     

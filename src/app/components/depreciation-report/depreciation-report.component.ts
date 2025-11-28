@@ -14,6 +14,11 @@ export class DepreciationReportComponent implements OnInit {
   report: DepreciationReport | null = null;
   loading = false;
   error: string | null = null;
+
+  // Pagination for vehicle depreciation
+  currentPage = 1;
+  itemsPerPage = 10;
+  pageSizeOptions = [5, 10, 25, 50, 100];
   
   constructor(private reportService: ReportService) {}
   
@@ -44,5 +49,38 @@ export class DepreciationReportComponent implements OnInit {
   
   exportToPDF(): void {
     this.reportService.downloadDepreciationReportPDF();
+  }
+
+  // Pagination methods
+  get paginatedVehicles() {
+    if (!this.report?.vehicleDepreciation) return [];
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.report.vehicleDepreciation.slice(start, end);
+  }
+
+  get totalPages(): number {
+    if (!this.report?.vehicleDepreciation) return 0;
+    return Math.ceil(this.report.vehicleDepreciation.length / this.itemsPerPage);
+  }
+
+  get totalItems(): number {
+    return this.report?.vehicleDepreciation?.length || 0;
+  }
+
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  onPageSizeChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.itemsPerPage = parseInt(target.value, 10);
+    this.currentPage = 1;
   }
 }

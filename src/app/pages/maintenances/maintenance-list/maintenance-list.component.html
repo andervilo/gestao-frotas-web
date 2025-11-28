@@ -2,64 +2,88 @@
   <div class="header">
     <h1>Manutenções</h1>
     <div class="header-actions">
-      <!-- Filtro por Status (Dropdown) -->
-      <div class="filter-dropdown">
-        <label for="statusFilter">Status:</label>
-        <select 
-          id="statusFilter"
-          [(ngModel)]="filterStatus" 
-          (change)="onStatusChange()"
-          class="form-select">
-          <option value="all">Todos</option>
-          <option [value]="MaintenanceStatus.SCHEDULED">Agendadas</option>
-          <option [value]="MaintenanceStatus.IN_PROGRESS">Em Progresso</option>
-          <option [value]="MaintenanceStatus.COMPLETED">Concluídas</option>
-          <option [value]="MaintenanceStatus.CANCELLED">Canceladas</option>
-        </select>
-      </div>
-      
-      <!-- Filtro por Tipo (Dropdown) -->
-      <div class="filter-dropdown">
-        <label for="typeFilter">Tipo:</label>
-        <select 
-          id="typeFilter"
-          [(ngModel)]="filterType" 
-          (change)="onTypeChange()"
-          class="form-select">
-          <option value="all">Todos</option>
-          <option [value]="MaintenanceType.PREVENTIVE">Preventiva</option>
-          <option [value]="MaintenanceType.CORRECTIVE">Corretiva</option>
-        </select>
-      </div>
-      
-      <!-- Filtro por Veículo -->
-      <div class="filter-dropdown">
-        <label for="vehicleFilter">Veículo:</label>
-        <select 
-          id="vehicleFilter"
-          [(ngModel)]="selectedVehicleId" 
-          (change)="filterByVehicle()"
-          class="form-select">
-          <option value="">Todos os Veículos</option>
-          <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
-            {{ vehicle.licensePlate }} - {{ vehicle.brand }} {{ vehicle.model }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Botão Limpar Filtros -->
-      <div class="filter-actions">
-        <button 
-          *ngIf="selectedVehicleId || filterStatus !== 'all' || filterType !== 'all'"
-          (click)="clearFilters()" 
-          class="btn btn-sm btn-outline"
-          title="Limpar Filtros">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
+      <button (click)="toggleFilters()" class="btn btn-secondary">
+        <i class="fas" [ngClass]="showFilters ? 'fa-filter-slash' : 'fa-filter'"></i>
+        {{ showFilters ? 'Ocultar' : 'Mostrar' }} Filtros
+      </button>
       <button routerLink="/maintenances/new" class="btn btn-primary">
         <i class="fas fa-plus"></i> Nova Manutenção
       </button>
+    </div>
+  </div>
+
+  <!-- Filtros colapsáveis -->
+  <div class="filters" *ngIf="showFilters">
+    <div class="filter-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="vehicleId">Veículo</label>
+          <select id="vehicleId" [(ngModel)]="filter.vehicleId" class="form-control">
+            <option [ngValue]="undefined">Todos</option>
+            <option *ngFor="let vehicle of vehicles" [ngValue]="vehicle.id">
+              {{ vehicle.licensePlate }} - {{ vehicle.brand }} {{ vehicle.model }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="type">Tipo</label>
+          <select id="type" [(ngModel)]="filter.type" class="form-control">
+            <option [ngValue]="undefined">Todos</option>
+            <option [value]="MaintenanceType.PREVENTIVE">Preventiva</option>
+            <option [value]="MaintenanceType.CORRECTIVE">Corretiva</option>
+            <option [value]="MaintenanceType.INSPECTION">Inspeção</option>
+            <option [value]="MaintenanceType.REPAIR">Reparo</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" [(ngModel)]="filter.status" class="form-control">
+            <option [ngValue]="undefined">Todos</option>
+            <option [value]="MaintenanceStatus.SCHEDULED">Agendada</option>
+            <option [value]="MaintenanceStatus.IN_PROGRESS">Em Progresso</option>
+            <option [value]="MaintenanceStatus.COMPLETED">Concluída</option>
+            <option [value]="MaintenanceStatus.CANCELLED">Cancelada</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Descrição</label>
+          <input type="text" id="description" [(ngModel)]="filter.description" class="form-control" placeholder="Buscar por descrição">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="scheduledDateFrom">Data Agendada De</label>
+          <input type="date" id="scheduledDateFrom" [(ngModel)]="filter.scheduledDateFrom" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="scheduledDateTo">Data Agendada Até</label>
+          <input type="date" id="scheduledDateTo" [(ngModel)]="filter.scheduledDateTo" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="completedDateFrom">Data Conclusão De</label>
+          <input type="date" id="completedDateFrom" [(ngModel)]="filter.completedDateFrom" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="completedDateTo">Data Conclusão Até</label>
+          <input type="date" id="completedDateTo" [(ngModel)]="filter.completedDateTo" class="form-control">
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button (click)="applyFilters()" class="btn btn-primary">
+          <i class="fas fa-search"></i> Aplicar Filtros
+        </button>
+        <button (click)="clearFilters()" class="btn btn-secondary">
+          <i class="fas fa-times"></i> Limpar
+        </button>
+      </div>
     </div>
   </div>
 
@@ -67,17 +91,65 @@
   <div *ngIf="error" class="error">{{ error }}</div>
 
   <div class="table-container" *ngIf="!loading && !error">
+    <!-- Informações de paginação -->
+    <div class="pagination-info">
+      <div class="results-info">
+        Mostrando {{ maintenances.length }} de {{ totalElements }} manutenções
+      </div>
+      <div class="page-size-selector">
+        <label for="pageSize">Itens por página:</label>
+        <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()" class="form-control">
+          <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+        </select>
+      </div>
+    </div>
+
     <table>
       <thead>
         <tr>
-          <th>Veículo</th>
-          <th>Tipo</th>
+          <th (click)="onSort('vehicle.licensePlate')" class="sortable">
+            Veículo
+            <i class="fas" [ngClass]="{
+              'fa-sort': sortBy !== 'vehicle.licensePlate',
+              'fa-sort-up': sortBy === 'vehicle.licensePlate' && direction === 'ASC',
+              'fa-sort-down': sortBy === 'vehicle.licensePlate' && direction === 'DESC'
+            }"></i>
+          </th>
+          <th (click)="onSort('type')" class="sortable">
+            Tipo
+            <i class="fas" [ngClass]="{
+              'fa-sort': sortBy !== 'type',
+              'fa-sort-up': sortBy === 'type' && direction === 'ASC',
+              'fa-sort-down': sortBy === 'type' && direction === 'DESC'
+            }"></i>
+          </th>
           <th>Descrição</th>
-          <th>Custo</th>
-          <th>Data Agendada</th>
+          <th (click)="onSort('cost')" class="sortable">
+            Custo
+            <i class="fas" [ngClass]="{
+              'fa-sort': sortBy !== 'cost',
+              'fa-sort-up': sortBy === 'cost' && direction === 'ASC',
+              'fa-sort-down': sortBy === 'cost' && direction === 'DESC'
+            }"></i>
+          </th>
+          <th (click)="onSort('scheduledDate')" class="sortable">
+            Data Agendada
+            <i class="fas" [ngClass]="{
+              'fa-sort': sortBy !== 'scheduledDate',
+              'fa-sort-up': sortBy === 'scheduledDate' && direction === 'ASC',
+              'fa-sort-down': sortBy === 'scheduledDate' && direction === 'DESC'
+            }"></i>
+          </th>
           <th>Data Início</th>
           <th>Data Conclusão</th>
-          <th>Status</th>
+          <th (click)="onSort('status')" class="sortable">
+            Status
+            <i class="fas" [ngClass]="{
+              'fa-sort': sortBy !== 'status',
+              'fa-sort-up': sortBy === 'status' && direction === 'ASC',
+              'fa-sort-down': sortBy === 'status' && direction === 'DESC'
+            }"></i>
+          </th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -141,6 +213,53 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- Paginação -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button 
+        (click)="onPageChange(0)" 
+        [disabled]="currentPage === 0"
+        class="btn btn-sm btn-secondary"
+        title="Primeira página">
+        <i class="fas fa-angle-double-left"></i>
+      </button>
+      
+      <button 
+        (click)="onPageChange(currentPage - 1)" 
+        [disabled]="currentPage === 0"
+        class="btn btn-sm btn-secondary"
+        title="Página anterior">
+        <i class="fas fa-angle-left"></i>
+      </button>
+
+      <button 
+        *ngFor="let page of pages" 
+        (click)="onPageChange(page)"
+        [class.active]="currentPage === page"
+        class="btn btn-sm btn-secondary page-number">
+        {{ page + 1 }}
+      </button>
+
+      <button 
+        (click)="onPageChange(currentPage + 1)" 
+        [disabled]="currentPage >= totalPages - 1"
+        class="btn btn-sm btn-secondary"
+        title="Próxima página">
+        <i class="fas fa-angle-right"></i>
+      </button>
+
+      <button 
+        (click)="onPageChange(totalPages - 1)" 
+        [disabled]="currentPage >= totalPages - 1"
+        class="btn btn-sm btn-secondary"
+        title="Última página">
+        <i class="fas fa-angle-double-right"></i>
+      </button>
+
+      <span class="page-info">
+        Página {{ currentPage + 1 }} de {{ totalPages }}
+      </span>
+    </div>
   </div>
 </div>
 

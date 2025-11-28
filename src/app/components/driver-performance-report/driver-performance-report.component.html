@@ -67,7 +67,7 @@
     
     <!-- CNHs Próximas do Vencimento -->
     <div class="section" *ngIf="report.cnhExpiring && report.cnhExpiring.length > 0">
-      <h2><i class="fas fa-exclamation-triangle"></i> CNHs Próximas do Vencimento ({{ report.cnhExpiring.length }})</h2>
+      <h2><i class="fas fa-exclamation-triangle"></i> CNHs Próximas do Vencimento ({{ totalItemsCNH }})</h2>
       <div class="table-container">
         <table>
           <thead>
@@ -80,7 +80,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let driver of report.cnhExpiring">
+            <tr *ngFor="let driver of paginatedCNH">
               <td><strong>{{ driver.name }}</strong></td>
               <td>{{ driver.cnh }}</td>
               <td>{{ driver.cnhExpiration | date: 'dd/MM/yyyy' }}</td>
@@ -94,11 +94,39 @@
           </tbody>
         </table>
       </div>
+      
+      <div class="pagination" *ngIf="totalPagesCNH > 1">
+        <button 
+          class="pagination-btn" 
+          (click)="changePageCNH(currentPageCNH - 1)"
+          [disabled]="currentPageCNH === 1">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <button 
+          *ngFor="let page of pagesCNH"
+          class="pagination-btn"
+          [class.active]="page === currentPageCNH"
+          (click)="changePageCNH(page)">
+          {{ page }}
+        </button>
+        
+        <button 
+          class="pagination-btn"
+          (click)="changePageCNH(currentPageCNH + 1)"
+          [disabled]="currentPageCNH === totalPagesCNH">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        
+        <span class="pagination-info">
+          Página {{ currentPageCNH }} de {{ totalPagesCNH }} ({{ totalItemsCNH }} itens)
+        </span>
+      </div>
     </div>
     
     <!-- Estatísticas de Desempenho -->
     <div class="section" *ngIf="report.driverStats && report.driverStats.length > 0">
-      <h2><i class="fas fa-chart-line"></i> Estatísticas de Desempenho ({{ report.driverStats.length }})</h2>
+      <h2><i class="fas fa-chart-line"></i> Estatísticas de Desempenho ({{ totalItemsStats }})</h2>
       <div class="table-container">
         <table>
           <thead>
@@ -112,7 +140,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let driver of report.driverStats">
+            <tr *ngFor="let driver of paginatedStats">
               <td><strong>{{ driver.name }}</strong></td>
               <td>{{ driver.cnh }}</td>
               <td>{{ driver.totalTrips }}</td>
@@ -126,6 +154,34 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      
+      <div class="pagination" *ngIf="totalPagesStats > 1">
+        <button 
+          class="pagination-btn" 
+          (click)="changePageStats(currentPageStats - 1)"
+          [disabled]="currentPageStats === 1">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <button 
+          *ngFor="let page of pagesStats"
+          class="pagination-btn"
+          [class.active]="page === currentPageStats"
+          (click)="changePageStats(page)">
+          {{ page }}
+        </button>
+        
+        <button 
+          class="pagination-btn"
+          (click)="changePageStats(currentPageStats + 1)"
+          [disabled]="currentPageStats === totalPagesStats">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        
+        <span class="pagination-info">
+          Página {{ currentPageStats }} de {{ totalPagesStats }} ({{ totalItemsStats }} itens)
+        </span>
       </div>
     </div>
   </div>

@@ -18,6 +18,26 @@ export class CorrectiveMaintenanceReportComponent implements OnInit {
   loading: boolean = false;
   error: string = '';
 
+  // Pagination for overdue
+  currentPageOverdue = 1;
+  itemsPerPageOverdue = 10;
+  pageSizeOptionsOverdue = [5, 10, 25, 50, 100];
+
+  // Pagination for upcoming
+  currentPageUpcoming = 1;
+  itemsPerPageUpcoming = 10;
+  pageSizeOptionsUpcoming = [5, 10, 25, 50, 100];
+
+  // Pagination for top vehicles
+  currentPageTopVehicles = 1;
+  itemsPerPageTopVehicles = 10;
+  pageSizeOptionsTopVehicles = [5, 10, 25, 50, 100];
+
+  // Pagination for corrective history
+  currentPageHistory = 1;
+  itemsPerPageHistory = 10;
+  pageSizeOptionsHistory = [5, 10, 25, 50, 100];
+
   constructor(private reportService: ReportService) {}
 
   ngOnInit(): void {
@@ -98,6 +118,138 @@ export class CorrectiveMaintenanceReportComponent implements OnInit {
           this.error = 'Erro ao exportar para PDF';
         }
       });
+  }
+
+  // Pagination methods for overdue maintenances
+  get paginatedOverdue() {
+    if (!this.report?.overdueCorrective) return [];
+    const start = (this.currentPageOverdue - 1) * this.itemsPerPageOverdue;
+    const end = start + this.itemsPerPageOverdue;
+    return this.report.overdueCorrective.slice(start, end);
+  }
+
+  get totalPagesOverdue(): number {
+    if (!this.report?.overdueCorrective) return 0;
+    return Math.ceil(this.report.overdueCorrective.length / this.itemsPerPageOverdue);
+  }
+
+  get totalItemsOverdue(): number {
+    return this.report?.overdueCorrective?.length || 0;
+  }
+
+  get pagesOverdue(): number[] {
+    return Array.from({ length: this.totalPagesOverdue }, (_, i) => i + 1);
+  }
+
+  changePageOverdue(page: number): void {
+    if (page >= 1 && page <= this.totalPagesOverdue) {
+      this.currentPageOverdue = page;
+    }
+  }
+
+  onPageSizeChangeOverdue(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.itemsPerPageOverdue = parseInt(target.value, 10);
+    this.currentPageOverdue = 1;
+  }
+
+  // Pagination methods for upcoming maintenances
+  get paginatedUpcoming() {
+    if (!this.report?.upcomingCorrective) return [];
+    const start = (this.currentPageUpcoming - 1) * this.itemsPerPageUpcoming;
+    const end = start + this.itemsPerPageUpcoming;
+    return this.report.upcomingCorrective.slice(start, end);
+  }
+
+  get totalPagesUpcoming(): number {
+    if (!this.report?.upcomingCorrective) return 0;
+    return Math.ceil(this.report.upcomingCorrective.length / this.itemsPerPageUpcoming);
+  }
+
+  get totalItemsUpcoming(): number {
+    return this.report?.upcomingCorrective?.length || 0;
+  }
+
+  get pagesUpcoming(): number[] {
+    return Array.from({ length: this.totalPagesUpcoming }, (_, i) => i + 1);
+  }
+
+  changePageUpcoming(page: number): void {
+    if (page >= 1 && page <= this.totalPagesUpcoming) {
+      this.currentPageUpcoming = page;
+    }
+  }
+
+  onPageSizeChangeUpcoming(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.itemsPerPageUpcoming = parseInt(target.value, 10);
+    this.currentPageUpcoming = 1;
+  }
+
+  // Pagination methods for top vehicles
+  get paginatedTopVehicles() {
+    if (!this.report?.topVehicles) return [];
+    const start = (this.currentPageTopVehicles - 1) * this.itemsPerPageTopVehicles;
+    const end = start + this.itemsPerPageTopVehicles;
+    return this.report.topVehicles.slice(start, end);
+  }
+
+  get totalPagesTopVehicles(): number {
+    if (!this.report?.topVehicles) return 0;
+    return Math.ceil(this.report.topVehicles.length / this.itemsPerPageTopVehicles);
+  }
+
+  get totalItemsTopVehicles(): number {
+    return this.report?.topVehicles?.length || 0;
+  }
+
+  get pagesTopVehicles(): number[] {
+    return Array.from({ length: this.totalPagesTopVehicles }, (_, i) => i + 1);
+  }
+
+  changePageTopVehicles(page: number): void {
+    if (page >= 1 && page <= this.totalPagesTopVehicles) {
+      this.currentPageTopVehicles = page;
+    }
+  }
+
+  onPageSizeChangeTopVehicles(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.itemsPerPageTopVehicles = parseInt(target.value, 10);
+    this.currentPageTopVehicles = 1;
+  }
+
+  // Pagination methods for corrective history
+  get paginatedHistory() {
+    if (!this.report?.correctiveHistory) return [];
+    const start = (this.currentPageHistory - 1) * this.itemsPerPageHistory;
+    const end = start + this.itemsPerPageHistory;
+    return this.report.correctiveHistory.slice(start, end);
+  }
+
+  get totalPagesHistory(): number {
+    if (!this.report?.correctiveHistory) return 0;
+    return Math.ceil(this.report.correctiveHistory.length / this.itemsPerPageHistory);
+  }
+
+  get totalItemsHistory(): number {
+    return this.report?.correctiveHistory?.length || 0;
+  }
+
+  get pagesHistory(): number[] {
+    return Array.from({ length: this.totalPagesHistory }, (_, i) => i + 1);
+  }
+
+  changePageHistory(page: number): void {
+    if (page >= 1 && page <= this.totalPagesHistory) {
+      this.currentPageHistory = page;
+    }
+  }
+
+  onPageSizeChangeHistory(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.itemsPerPageHistory = parseInt(target.value, 10);
+    this.currentPageHistory = 1;
   }
 
   translateStatus(status: string): string {

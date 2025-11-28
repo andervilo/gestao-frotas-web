@@ -26,3 +26,14 @@ export interface Maintenance {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface MaintenanceFilter {
+  vehicleId?: string;
+  type?: MaintenanceType;
+  status?: MaintenanceStatus;
+  description?: string;
+  scheduledDateFrom?: string;
+  scheduledDateTo?: string;
+  completedDateFrom?: string;
+  completedDateTo?: string;
+}

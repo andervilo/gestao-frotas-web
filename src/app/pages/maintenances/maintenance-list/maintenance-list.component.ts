@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Maintenance, MaintenanceStatus, MaintenanceType } from '../../../models/maintenance.model';
+import { Maintenance, MaintenanceStatus, MaintenanceType, MaintenanceFilter } from '../../../models/maintenance.model';
 import { MaintenanceService } from '../../../services/maintenance.service';
 import { Vehicle } from '../../../models/vehicle.model';
 import { VehicleService } from '../../../services/vehicle.service';
@@ -20,12 +20,22 @@ export class MaintenanceListComponent implements OnInit {
   vehicles: Vehicle[] = [];
   loading = false;
   error: string | null = null;
-  filterStatus: MaintenanceStatus | 'all' = 'all';
-  filterType: MaintenanceType | 'all' = 'all';
-  selectedVehicleId: string = '';
+  showFilters = false;
 
   MaintenanceStatus = MaintenanceStatus;
   MaintenanceType = MaintenanceType;
+  
+  // Paginação
+  currentPage = 0;
+  pageSize = 10;
+  pageSizes = [5, 10, 20, 50];
+  totalPages = 0;
+  totalElements = 0;
+  
+  // Filtros
+  filter: MaintenanceFilter = {};
+  sortBy = 'scheduledDate';
+  direction = 'DESC';
 
   // Modal para ações
   showActionModal = false;
@@ -67,22 +77,11 @@ export class MaintenanceListComponent implements OnInit {
     this.loading = true;
     this.error = null;
     
-    let request;
-    
-    // Filtro por veículo tem prioridade
-    if (this.selectedVehicleId) {
-      request = this.maintenanceService.getByVehicleId(this.selectedVehicleId);
-    } else if (this.filterType !== 'all') {
-      request = this.maintenanceService.getByType(this.filterType);
-    } else if (this.filterStatus !== 'all') {
-      request = this.maintenanceService.getByStatus(this.filterStatus);
-    } else {
-      request = this.maintenanceService.getAll();
-    }
-    
-    request.subscribe({
-      next: (data: Maintenance[]) => {
-        this.maintenances = data;
+    this.maintenanceService.getAll(this.filter, this.currentPage, this.pageSize, this.sortBy, this.direction).subscribe({
+      next: (response: PagedResponse<Maintenance>) => {
+        this.maintenances = response.content;
+        this.totalPages = response.totalPages;
+        this.totalElements = response.totalElements;
         this.loading = false;
       },
       error: (err: any) => {
@@ -93,43 +92,43 @@ export class MaintenanceListComponent implements OnInit {
     });
   }
 
-  filterByStatus(status: MaintenanceStatus | 'all'): void {
-    this.filterStatus = status;
-    this.filterType = 'all'; // Limpar filtro de tipo
-    this.selectedVehicleId = ''; // Limpar filtro de veículo
-    this.loadMaintenances();
-  }
-
-  onStatusChange(): void {
-    this.filterType = 'all';
-    this.selectedVehicleId = '';
-    this.loadMaintenances();
-  }
-
-  filterByType(type: MaintenanceType | 'all'): void {
-    this.filterType = type;
-    this.filterStatus = 'all'; // Limpar filtro de status
-    this.selectedVehicleId = ''; // Limpar filtro de veículo
-    this.loadMaintenances();
-  }
-
-  onTypeChange(): void {
-    this.filterStatus = 'all';
-    this.selectedVehicleId = '';
-    this.loadMaintenances();
-  }
-
-  filterByVehicle(): void {
-    this.filterStatus = 'all'; // Resetar filtro de status
-    this.filterType = 'all'; // Resetar filtro de tipo
+  applyFilters(): void {
+    this.currentPage = 0;
     this.loadMaintenances();
   }
 
   clearFilters(): void {
-    this.filterStatus = 'all';
-    this.filterType = 'all';
-    this.selectedVehicleId = '';
+    this.filter = {};
+    this.currentPage = 0;
     this.loadMaintenances();
+  }
+
+  toggleFilters(): void {
+    this.showFilters = !this.showFilters;
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadMaintenances();
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 0;
+    this.loadMaintenances();
+  }
+
+  onSort(field: string): void {
+    if (this.sortBy === field) {
+      this.direction = this.direction === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.sortBy = field;
+      this.direction = 'ASC';
+    }
+    this.loadMaintenances();
+  }
+
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i);
   }
 
   deleteMaintenance(id: string): void {

@@ -148,4 +148,91 @@
       }
     }
   }
+
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+    margin-top: 20px;
+    flex-wrap: wrap;
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      label {
+        font-size: 14px;
+        color: #666;
+        margin: 0;
+      }
+
+      .page-size-select {
+        padding: 6px 30px 6px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        background-color: white;
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2210%22%20height%3D%225%22%20viewBox%3D%220%200%2010%205%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M0%200l5%205%205-5z%22%20fill%3D%22%23666%22/%3E%3C/svg%3E');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 10px;
+        appearance: none;
+
+        &:focus {
+          outline: none;
+          border-color: #1976d2;
+        }
+      }
+    }
+
+    .pagination-buttons {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pagination-btn {
+      min-width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+      color: #666;
+
+      &:hover:not(:disabled) {
+        background: #f5f5f5;
+        border-color: #1976d2;
+        color: #1976d2;
+      }
+
+      &.active {
+        background: #1976d2;
+        color: white;
+        border-color: #1976d2;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        color: #ccc;
+      }
+    }
+
+    .pagination-info {
+      font-size: 14px;
+      color: #666;
+      white-space: nowrap;
+    }
+  }
 }

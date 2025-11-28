@@ -75,7 +75,7 @@
     
     <!-- Manutenções Atrasadas -->
     <div class="section" *ngIf="report.overdue && report.overdue.length > 0">
-      <h2><i class="fas fa-exclamation-triangle"></i> Manutenções Atrasadas ({{ report.overdue.length }})</h2>
+      <h2><i class="fas fa-exclamation-triangle"></i> Manutenções Atrasadas ({{ totalItemsOverdue }})</h2>
       <div class="table-container">
         <table>
           <thead>
@@ -88,7 +88,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of report.overdue">
+            <tr *ngFor="let item of paginatedOverdue">
               <td>
                 <strong>{{ item.brand }} {{ item.model }}</strong><br>
                 <small>{{ item.licensePlate }}</small>
@@ -105,11 +105,62 @@
           </tbody>
         </table>
       </div>
+      
+      <div class="pagination-wrapper" *ngIf="totalPagesOverdue > 1 || totalItemsOverdue > 10">
+        <div class="pagination-left">
+          <label>Itens por página:</label>
+          <select class="page-size-select" [(ngModel)]="itemsPerPageOverdue" (change)="onPageSizeChangeOverdue($event)">
+            <option *ngFor="let size of pageSizeOptionsOverdue" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+        
+        <div class="pagination-center">
+          <button 
+            class="pagination-btn" 
+            (click)="changePageOverdue(1)"
+            [disabled]="currentPageOverdue === 1">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn" 
+            (click)="changePageOverdue(currentPageOverdue - 1)"
+            [disabled]="currentPageOverdue === 1">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <button 
+            *ngFor="let page of pagesOverdue"
+            class="pagination-btn"
+            [class.active]="page === currentPageOverdue"
+            (click)="changePageOverdue(page)">
+            {{ page }}
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageOverdue(currentPageOverdue + 1)"
+            [disabled]="currentPageOverdue === totalPagesOverdue">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageOverdue(totalPagesOverdue)"
+            [disabled]="currentPageOverdue === totalPagesOverdue">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </div>
+        
+        <div class="pagination-right">
+          Página {{ currentPageOverdue }} de {{ totalPagesOverdue }} ({{ totalItemsOverdue }} itens)
+        </div>
+      </div>
     </div>
     
     <!-- Manutenções Próximas -->
     <div class="section" *ngIf="report.upcoming && report.upcoming.length > 0">
-      <h2><i class="fas fa-calendar-alt"></i> Manutenções Próximas - 30 Dias ({{ report.upcoming.length }})</h2>
+      <h2><i class="fas fa-calendar-alt"></i> Manutenções Próximas - 30 Dias ({{ totalItemsUpcoming }})</h2>
       <div class="table-container">
         <table>
           <thead>
@@ -122,7 +173,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of report.upcoming">
+          <tr *ngFor="let item of paginatedUpcoming">
             <td>
               <strong>{{ item.brand }} {{ item.model }}</strong><br>
               <small>{{ item.licensePlate }}</small>
@@ -139,11 +190,62 @@
         </tbody>
       </table>
       </div>
+      
+      <div class="pagination-wrapper" *ngIf="totalPagesUpcoming > 1 || totalItemsUpcoming > 10">
+        <div class="pagination-left">
+          <label>Itens por página:</label>
+          <select class="page-size-select" [(ngModel)]="itemsPerPageUpcoming" (change)="onPageSizeChangeUpcoming($event)">
+            <option *ngFor="let size of pageSizeOptionsUpcoming" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+        
+        <div class="pagination-center">
+          <button 
+            class="pagination-btn" 
+            (click)="changePageUpcoming(1)"
+            [disabled]="currentPageUpcoming === 1">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn" 
+            (click)="changePageUpcoming(currentPageUpcoming - 1)"
+            [disabled]="currentPageUpcoming === 1">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <button 
+            *ngFor="let page of pagesUpcoming"
+            class="pagination-btn"
+            [class.active]="page === currentPageUpcoming"
+            (click)="changePageUpcoming(page)">
+            {{ page }}
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageUpcoming(currentPageUpcoming + 1)"
+            [disabled]="currentPageUpcoming === totalPagesUpcoming">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageUpcoming(totalPagesUpcoming)"
+            [disabled]="currentPageUpcoming === totalPagesUpcoming">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </div>
+        
+        <div class="pagination-right">
+          Página {{ currentPageUpcoming }} de {{ totalPagesUpcoming }} ({{ totalItemsUpcoming }} itens)
+        </div>
+      </div>
     </div>
     
     <!-- Histórico de Manutenções -->
     <div class="section">
-      <h2><i class="fas fa-history"></i> Histórico de Manutenções ({{ report.history.length }})</h2>
+      <h2><i class="fas fa-history"></i> Histórico de Manutenções ({{ totalItemsHistory }})</h2>
       <div class="table-container">
         <table>
           <thead>
@@ -158,7 +260,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of report.history">
+            <tr *ngFor="let item of paginatedHistory">
               <td><strong>{{ item.licensePlate }}</strong></td>
               <td>{{ item.type }}</td>
               <td>{{ item.description }}</td>
@@ -169,6 +271,57 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      
+      <div class="pagination-wrapper" *ngIf="totalPagesHistory > 1 || totalItemsHistory > 10">
+        <div class="pagination-left">
+          <label>Itens por página:</label>
+          <select class="page-size-select" [(ngModel)]="itemsPerPageHistory" (change)="onPageSizeChangeHistory($event)">
+            <option *ngFor="let size of pageSizeOptionsHistory" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+        
+        <div class="pagination-center">
+          <button 
+            class="pagination-btn" 
+            (click)="changePageHistory(1)"
+            [disabled]="currentPageHistory === 1">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn" 
+            (click)="changePageHistory(currentPageHistory - 1)"
+            [disabled]="currentPageHistory === 1">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <button 
+            *ngFor="let page of pagesHistory"
+            class="pagination-btn"
+            [class.active]="page === currentPageHistory"
+            (click)="changePageHistory(page)">
+            {{ page }}
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageHistory(currentPageHistory + 1)"
+            [disabled]="currentPageHistory === totalPagesHistory">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          
+          <button 
+            class="pagination-btn"
+            (click)="changePageHistory(totalPagesHistory)"
+            [disabled]="currentPageHistory === totalPagesHistory">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </div>
+        
+        <div class="pagination-right">
+          Página {{ currentPageHistory }} de {{ totalPagesHistory }} ({{ totalItemsHistory }} itens)
+        </div>
       </div>
     </div>
   </div>

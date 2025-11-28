@@ -17,6 +17,11 @@ export class TripReportComponent implements OnInit {
   error: string | null = null;
   startDate: string = '';
   endDate: string = '';
+
+  // Pagination for top routes
+  currentPageTopRoutes = 1;
+  itemsPerPageTopRoutes = 10;
+  pageSizeOptionsTopRoutes = [5, 10, 25, 50, 100];
   
   constructor(private reportService: ReportService) {}
   
@@ -77,5 +82,38 @@ export class TripReportComponent implements OnInit {
   
   private formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
+  }
+
+  // Pagination methods for top routes
+  get paginatedTopRoutes() {
+    if (!this.report?.topRoutes) return [];
+    const start = (this.currentPageTopRoutes - 1) * this.itemsPerPageTopRoutes;
+    const end = start + this.itemsPerPageTopRoutes;
+    return this.report.topRoutes.slice(start, end);
+  }
+
+  get totalPagesTopRoutes(): number {
+    if (!this.report?.topRoutes) return 0;
+    return Math.ceil(this.report.topRoutes.length / this.itemsPerPageTopRoutes);
+  }
+
+  get totalItemsTopRoutes(): number {
+    return this.report?.topRoutes?.length || 0;
+  }
+
+  get pagesTopRoutes(): number[] {
+    return Array.from({ length: this.totalPagesTopRoutes }, (_, i) => i + 1);
+  }
+
+  changePageTopRoutes(page: number): void {
+    if (page >= 1 && page <= this.totalPagesTopRoutes) {
+      this.currentPageTopRoutes = page;
+    }
+  }
+
+  onPageSizeChangeTopRoutes(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.itemsPerPageTopRoutes = parseInt(target.value, 10);
+    this.currentPageTopRoutes = 1;
   }
 }
