@@ -128,4 +128,69 @@ export class CostReportComponent implements OnInit {
     this.itemsPerPageMonthly = parseInt(target.value, 10);
     this.currentPageMonthly = 1;
   }
+
+  exportVehiclesExcel(): void {
+    if (!this.report?.vehicleCosts) return;
+    
+    const data = this.report.vehicleCosts.map(vehicle => ({
+      'Placa': vehicle.licensePlate,
+      'Marca': vehicle.brand,
+      'Modelo': vehicle.model,
+      'Custo Total': vehicle.totalCost,
+      'Custo Manutenção': vehicle.maintenanceCost,
+      'KM Total': vehicle.totalKm,
+      'Custo/KM': vehicle.costPerKm
+    }));
+    
+    this.exportToExcel(data, 'Custos_por_Veiculo');
+  }
+
+  exportMonthlyExcel(): void {
+    if (!this.report?.monthlyCosts) return;
+    
+    const data = this.report.monthlyCosts.map(monthly => ({
+      'Mês': monthly.month,
+      'Custo Total': monthly.totalCost,
+      'Custo Manutenção': monthly.maintenanceCost
+    }));
+    
+    this.exportToExcel(data, 'Evolucao_Mensal_Custos');
+  }
+
+  private exportToExcel(data: any[], filename: string): void {
+    const worksheet = this.createWorksheetCSV(data);
+    const workbook = this.writeWorkbookCSV(worksheet);
+    this.saveAsExcelFile(workbook, filename);
+  }
+
+  private createWorksheet(data: any[]): any {
+    // Implementação simplificada - você pode usar biblioteca como xlsx
+    return data;
+  }
+
+  private createWorksheetCSV(data: any[]): string {
+    const headers = Object.keys(data[0]);
+    let csv = headers.join(',') + '\n';
+    data.forEach(row => {
+      csv += headers.map(header => row[header]).join(',') + '\n';
+    });
+    return csv;
+  }
+
+  private writeWorkbook(wb: any): any {
+    // Implementação simplificada
+    return wb;
+  }
+
+  private writeWorkbookCSV(worksheet: string): Blob {
+    return new Blob([worksheet], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+
+  private saveAsExcelFile(buffer: any, fileName: string): void {
+    const blob = buffer instanceof Blob ? buffer : new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = `${fileName}_${new Date().getTime()}.xlsx`;
+    link.click();
+  }
 }

@@ -162,6 +162,8 @@
         margin-bottom: 20px;
         padding-bottom: 15px;
         border-bottom: 2px solid #f0f0f0;
+        flex-wrap: wrap;
+        gap: 10px;
 
         h2 {
           margin: 0;
@@ -177,6 +179,13 @@
           }
         }
 
+        .header-actions {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          flex-wrap: wrap;
+        }
+
         .record-count {
           font-size: 14px;
           color: #666;
@@ -184,6 +193,19 @@
           padding: 6px 12px;
           border-radius: 4px;
           font-weight: 500;
+        }
+
+        .btn-sm {
+          padding: 6px 12px;
+          font-size: 13px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          white-space: nowrap;
+
+          i {
+            font-size: 14px;
+          }
         }
       }
 

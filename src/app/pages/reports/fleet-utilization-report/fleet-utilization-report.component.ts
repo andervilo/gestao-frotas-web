@@ -137,4 +137,72 @@ export class FleetUtilizationReportComponent implements OnInit {
     this.itemsPerPageIdle = parseInt(target.value, 10);
     this.currentPageIdle = 1;
   }
+
+  exportUtilizationExcel(): void {
+    if (!this.report?.vehicleUtilization) return;
+    
+    const data = this.report.vehicleUtilization.map(vehicle => ({
+      'Placa': vehicle.licensePlate,
+      'Marca/Modelo': `${vehicle.brand} ${vehicle.model}`,
+      'Viagens': vehicle.totalTrips,
+      'KM Total': vehicle.totalKm,
+      'Dias em Uso': vehicle.daysInUse,
+      'Dias Parado': vehicle.daysIdle,
+      'Taxa Utilização (%)': vehicle.utilizationRate,
+      'Status': vehicle.utilizationStatus
+    }));
+    
+    this.exportToExcel(data, 'Utilizacao_por_Veiculo');
+  }
+
+  exportIdleExcel(): void {
+    if (!this.report?.idleVehiclesList) return;
+    
+    const data = this.report.idleVehiclesList.map(vehicle => ({
+      'Placa': vehicle.licensePlate,
+      'Marca/Modelo': `${vehicle.brand} ${vehicle.model}`,
+      'Dias Parado': vehicle.daysIdle,
+      'Última Viagem': vehicle.lastTripDate || 'Nunca',
+      'Sugestão': vehicle.suggestion
+    }));
+    
+    this.exportToExcel(data, 'Veiculos_Ociosos');
+  }
+
+  private exportToExcel(data: any[], filename: string): void {
+    const worksheet = this.createWorksheetCSV(data);
+    const workbook = this.writeWorkbookCSV(worksheet);
+    this.saveAsExcelFile(workbook, filename);
+  }
+
+  private createWorksheet(data: any[]): any {
+    // Implementação simplificada - você pode usar biblioteca como xlsx
+    return data;
+  }
+
+  private createWorksheetCSV(data: any[]): string {
+    const headers = Object.keys(data[0]);
+    let csv = headers.join(',') + '\n';
+    data.forEach(row => {
+      csv += headers.map(header => row[header]).join(',') + '\n';
+    });
+    return csv;
+  }
+
+  private writeWorkbook(wb: any): any {
+    // Implementação simplificada
+    return wb;
+  }
+
+  private writeWorkbookCSV(worksheet: string): Blob {
+    return new Blob([worksheet], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+
+  private saveAsExcelFile(buffer: any, fileName: string): void {
+    const blob = buffer instanceof Blob ? buffer : new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = `${fileName}_${new Date().getTime()}.xlsx`;
+    link.click();
+  }
 }

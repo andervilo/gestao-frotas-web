@@ -96,7 +96,12 @@
         <div class="section" *ngIf="activeTab === 'topRoutes' && report.topRoutes && report.topRoutes.length > 0">
           <div class="section-header">
             <h2><i class="fas fa-map-marker-alt"></i> Rotas Mais Frequentes</h2>
-            <span class="record-count">Mostrando {{ paginatedTopRoutes.length }} de {{ totalItemsTopRoutes }} rotas</span>
+            <div class="header-actions">
+              <span class="record-count">Mostrando {{ paginatedTopRoutes.length }} de {{ totalItemsTopRoutes }} rotas</span>
+              <button (click)="exportTopRoutesExcel()" class="btn btn-success btn-sm">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+              </button>
+            </div>
           </div>
       <div class="table-container">
         <table>
@@ -176,7 +181,12 @@
         <div class="section" *ngIf="activeTab === 'byStatus'">
           <div class="section-header">
             <h2><i class="fas fa-chart-bar"></i> Viagens por Status</h2>
-            <span class="record-count">{{ getStatusKeys().length }} status diferentes</span>
+            <div class="header-actions">
+              <span class="record-count">{{ getStatusKeys().length }} status diferentes</span>
+              <button (click)="exportByStatusExcel()" class="btn btn-success btn-sm">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+              </button>
+            </div>
           </div>
       <div class="table-container">
         <table>

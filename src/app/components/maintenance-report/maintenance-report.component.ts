@@ -89,6 +89,94 @@ export class MaintenanceReportComponent implements OnInit {
     if (!this.startDate || !this.endDate) return;
     this.reportService.downloadMaintenanceReportPDF(this.startDate, this.endDate);
   }
+
+  // Excel Export Methods for Tabs
+  exportOverdueExcel(): void {
+    if (!this.report?.overdue || this.report.overdue.length === 0) {
+      alert('Não há dados para exportar');
+      return;
+    }
+
+    const data = this.report.overdue.map(item => ({
+      'Placa': item.licensePlate,
+      'Marca': item.brand,
+      'Modelo': item.model,
+      'Tipo': item.type,
+      'Data Agendada': item.scheduledDate,
+      'Dias em Atraso': item.daysOverdue,
+      'Severidade': item.severity
+    }));
+
+    this.exportTabToExcel(data, 'Manutencoes_Atrasadas');
+  }
+
+  exportUpcomingExcel(): void {
+    if (!this.report?.upcoming || this.report.upcoming.length === 0) {
+      alert('Não há dados para exportar');
+      return;
+    }
+
+    const data = this.report.upcoming.map(item => ({
+      'Placa': item.licensePlate,
+      'Marca': item.brand,
+      'Modelo': item.model,
+      'Tipo': item.type,
+      'Data Agendada': item.scheduledDate,
+      'Dias até Vencimento': item.daysUntil,
+      'Prioridade': item.priority
+    }));
+
+    this.exportTabToExcel(data, 'Manutencoes_Proximas');
+  }
+
+  exportHistoryExcel(): void {
+    if (!this.report?.history || this.report.history.length === 0) {
+      alert('Não há dados para exportar');
+      return;
+    }
+
+    const data = this.report.history.map(item => ({
+      'Placa': item.licensePlate,
+      'Tipo': item.type,
+      'Descrição': item.description,
+      'Data Agendada': item.scheduledDate,
+      'Data Conclusão': item.completionDate || 'N/A',
+      'Custo': item.cost,
+      'Status': this.translateStatus(item.status)
+    }));
+
+    this.exportTabToExcel(data, 'Historico_Manutencoes');
+  }
+
+  private exportTabToExcel(data: any[], filename: string): void {
+    const worksheet = this.createWorksheet(data);
+    const workbook = this.writeWorkbook(worksheet);
+    this.saveAsExcelFile(workbook, filename);
+  }
+
+  private createWorksheet(data: any[]): string {
+    const headers = Object.keys(data[0]);
+    let csv = headers.join(',') + '\n';
+    data.forEach(row => {
+      csv += headers.map(header => row[header]).join(',') + '\n';
+    });
+    return csv;
+  }
+
+  private writeWorkbook(worksheet: string): Blob {
+    return new Blob([worksheet], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+
+  private saveAsExcelFile(workbook: Blob, filename: string): void {
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(workbook);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${filename}_${new Date().getTime()}.xlsx`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
   
   getPriorityClass(priority: string): string {
     switch (priority) {

@@ -88,7 +88,12 @@
         <div class="section">
           <div class="section-header">
             <h2><i class="fas fa-chart-pie"></i> Utilização por Veículo</h2>
-            <span class="record-count">Mostrando {{ paginatedUtilization.length }} de {{ totalItemsUtilization }} veículos</span>
+            <div class="header-actions">
+              <span class="record-count">Mostrando {{ paginatedUtilization.length }} de {{ totalItemsUtilization }} veículos</span>
+              <button (click)="exportUtilizationExcel()" class="btn btn-success btn-sm">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+              </button>
+            </div>
           </div>
           <div class="table-container">
             <table>
@@ -181,7 +186,12 @@
         <div class="section">
           <div class="section-header">
             <h2><i class="fas fa-exclamation-triangle"></i> Veículos Ociosos (Mais de 30 dias parados)</h2>
-            <span class="record-count">Mostrando {{ paginatedIdle.length }} de {{ totalItemsIdle }} veículos</span>
+            <div class="header-actions">
+              <span class="record-count">Mostrando {{ paginatedIdle.length }} de {{ totalItemsIdle }} veículos</span>
+              <button (click)="exportIdleExcel()" class="btn btn-success btn-sm">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+              </button>
+            </div>
           </div>
           <div class="table-container">
             <table>

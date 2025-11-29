@@ -161,10 +161,28 @@
           color: #333;
         }
 
+        .header-actions {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+        }
+
         .record-count {
           font-size: 14px;
           color: #666;
           font-weight: normal;
+        }
+
+        .btn-sm {
+          padding: 6px 12px;
+          font-size: 13px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+
+          i {
+            font-size: 14px;
+          }
         }
       }
 

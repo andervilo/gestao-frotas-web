@@ -276,4 +276,105 @@ export class CorrectiveMaintenanceReportComponent implements OnInit {
     };
     return statusMap[status] || status;
   }
+
+  // Excel Export Methods
+  exportOverdueExcel(): void {
+    if (!this.report?.overdueCorrective || this.report.overdueCorrective.length === 0) {
+      alert('Não há dados para exportar');
+      return;
+    }
+
+    const data = this.report.overdueCorrective.map(item => ({
+      'Placa': item.licensePlate,
+      'Veículo': `${item.brand} ${item.model}`,
+      'Tipo': item.type,
+      'Data Agendada': item.scheduledDate,
+      'Dias em Atraso': item.daysOverdue,
+      'Severidade': item.severity
+    }));
+
+    this.exportTabToExcel(data, 'Corretivas_Vencidas');
+  }
+
+  exportUpcomingExcel(): void {
+    if (!this.report?.upcomingCorrective || this.report.upcomingCorrective.length === 0) {
+      alert('Não há dados para exportar');
+      return;
+    }
+
+    const data = this.report.upcomingCorrective.map(item => ({
+      'Placa': item.licensePlate,
+      'Veículo': `${item.brand} ${item.model}`,
+      'Tipo': item.type,
+      'Data Agendada': item.scheduledDate,
+      'Dias até Vencimento': item.daysUntil,
+      'Prioridade': item.priority
+    }));
+
+    this.exportTabToExcel(data, 'Corretivas_Programadas');
+  }
+
+  exportTopVehiclesExcel(): void {
+    if (!this.report?.topVehicles || this.report.topVehicles.length === 0) {
+      alert('Não há dados para exportar');
+      return;
+    }
+
+    const data = this.report.topVehicles.map(item => ({
+      'Placa': item.licensePlate,
+      'Nº de Manutenções': item.maintenanceCount,
+      'Custo Total': item.totalCost
+    }));
+
+    this.exportTabToExcel(data, 'Top_Veiculos_Corretivas');
+  }
+
+  exportHistoryExcel(): void {
+    if (!this.report?.correctiveHistory || this.report.correctiveHistory.length === 0) {
+      alert('Não há dados para exportar');
+      return;
+    }
+
+    const data = this.report.correctiveHistory.map(item => ({
+      'Placa': item.licensePlate,
+      'Tipo': item.type,
+      'Descrição': item.description,
+      'Data Agendada': item.scheduledDate,
+      'Data Conclusão': item.completionDate || 'N/A',
+      'Custo': item.cost,
+      'Status': this.translateStatus(item.status)
+    }));
+
+    this.exportTabToExcel(data, 'Historico_Corretivas');
+  }
+
+  private exportTabToExcel(data: any[], filename: string): void {
+    const worksheet = this.createWorksheet(data);
+    const workbook = this.writeWorkbook(worksheet);
+    this.saveAsExcelFile(workbook, filename);
+  }
+
+  private createWorksheet(data: any[]): string {
+    const headers = Object.keys(data[0]);
+    let csv = headers.join(',') + '\n';
+    data.forEach(row => {
+      csv += headers.map(header => row[header]).join(',') + '\n';
+    });
+    return csv;
+  }
+
+  private writeWorkbook(worksheet: string): Blob {
+    return new Blob([worksheet], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+
+  private saveAsExcelFile(workbook: Blob, filename: string): void {
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(workbook);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${filename}_${new Date().getTime()}.xlsx`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 }

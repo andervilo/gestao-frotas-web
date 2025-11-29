@@ -87,7 +87,12 @@
         <div class="section" *ngIf="activeTab === 'cnh' && report.cnhExpiring && report.cnhExpiring.length > 0">
           <div class="section-header">
             <h2><i class="fas fa-exclamation-triangle"></i> CNHs Próximas do Vencimento</h2>
-            <span class="record-count">Mostrando {{ paginatedCNH.length }} de {{ totalItemsCNH }} motoristas</span>
+            <div class="header-actions">
+              <span class="record-count">Mostrando {{ paginatedCNH.length }} de {{ totalItemsCNH }} motoristas</span>
+              <button (click)="exportCNHExcel()" class="btn btn-success btn-sm">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+              </button>
+            </div>
           </div>
       <div class="table-container">
         <table>
@@ -171,7 +176,12 @@
         <div class="section" *ngIf="activeTab === 'stats' && report.driverStats && report.driverStats.length > 0">
           <div class="section-header">
             <h2><i class="fas fa-chart-line"></i> Estatísticas de Desempenho</h2>
-            <span class="record-count">Mostrando {{ paginatedStats.length }} de {{ totalItemsStats }} motoristas</span>
+            <div class="header-actions">
+              <span class="record-count">Mostrando {{ paginatedStats.length }} de {{ totalItemsStats }} motoristas</span>
+              <button (click)="exportStatsExcel()" class="btn btn-success btn-sm">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+              </button>
+            </div>
           </div>
       <div class="table-container">
         <table>

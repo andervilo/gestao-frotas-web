@@ -170,4 +170,70 @@ export class DriverPerformanceReportComponent implements OnInit {
     this.itemsPerPageStats = parseInt(target.value, 10);
     this.currentPageStats = 1;
   }
+
+  // Excel Export Methods
+  exportCNHExcel(): void {
+    if (!this.report?.cnhExpiring || this.report.cnhExpiring.length === 0) {
+      alert('Não há dados para exportar');
+      return;
+    }
+
+    const data = this.report.cnhExpiring.map(item => ({
+      'Motorista': item.name,
+      'CNH': item.cnh,
+      'Data de Vencimento': item.cnhExpiration,
+      'Dias até Vencer': item.daysUntilExpiration,
+      'Status': item.status
+    }));
+
+    this.exportTabToExcel(data, 'CNHs_Vencimento');
+  }
+
+  exportStatsExcel(): void {
+    if (!this.report?.driverStats || this.report.driverStats.length === 0) {
+      alert('Não há dados para exportar');
+      return;
+    }
+
+    const data = this.report.driverStats.map(item => ({
+      'Motorista': item.name,
+      'CNH': item.cnh,
+      'Total de Viagens': item.totalTrips,
+      'KM Total': item.totalKm,
+      'Taxa de Utilização': item.utilizationRate,
+      'Ranking': item.ranking
+    }));
+
+    this.exportTabToExcel(data, 'Estatisticas_Motoristas');
+  }
+
+  private exportTabToExcel(data: any[], filename: string): void {
+    const worksheet = this.createWorksheet(data);
+    const workbook = this.writeWorkbook(worksheet);
+    this.saveAsExcelFile(workbook, filename);
+  }
+
+  private createWorksheet(data: any[]): string {
+    const headers = Object.keys(data[0]);
+    let csv = headers.join(',') + '\n';
+    data.forEach(row => {
+      csv += headers.map(header => row[header]).join(',') + '\n';
+    });
+    return csv;
+  }
+
+  private writeWorkbook(worksheet: string): Blob {
+    return new Blob([worksheet], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+
+  private saveAsExcelFile(workbook: Blob, filename: string): void {
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(workbook);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${filename}_${new Date().getTime()}.xlsx`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 }
