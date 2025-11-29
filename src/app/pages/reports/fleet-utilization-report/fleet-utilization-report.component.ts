@@ -19,6 +19,9 @@ export class FleetUtilizationReportComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
+  // Tabs
+  activeTab: 'utilization' | 'idle' = 'utilization';
+
   // Pagination for vehicle utilization
   currentPageUtilization = 1;
   itemsPerPageUtilization = 5;

@@ -65,176 +65,199 @@
       </div>
     </div>
 
-    <!-- Tabela de Utilização -->
-    <div class="section">
-      <div class="section-header">
-        <h2><i class="fas fa-chart-pie"></i> Utilização por Veículo</h2>
-        <span class="record-count">Mostrando {{ paginatedUtilization.length }} de {{ totalItemsUtilization }} veículos</span>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Placa</th>
-              <th>Marca/Modelo</th>
-              <th>Viagens</th>
-              <th>KM Total</th>
-              <th>Dias em Uso</th>
-              <th>Dias Parado</th>
-              <th>Taxa Utilização</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let vehicle of paginatedUtilization">
-              <td><strong>{{ vehicle.licensePlate }}</strong></td>
-              <td>{{ vehicle.brand }} {{ vehicle.model }}</td>
-              <td>{{ vehicle.totalTrips }}</td>
-              <td>{{ vehicle.totalKm | number }}</td>
-              <td>{{ vehicle.daysInUse }}</td>
-              <td>{{ vehicle.daysIdle }}</td>
-              <td>{{ vehicle.utilizationRate | number:'1.1-1' }}%</td>
-              <td>
-                <span class="badge" [ngClass]="getStatusClass(vehicle.utilizationStatus)">
-                  {{ vehicle.utilizationStatus }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <!-- Tabs Container -->
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'utilization'"
+          (click)="activeTab = 'utilization'">
+          <i class="fas fa-chart-pie"></i> Utilização por Veículo
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'idle'"
+          (click)="activeTab = 'idle'"
+          *ngIf="report.idleVehiclesList.length > 0">
+          <i class="fas fa-exclamation-triangle"></i> Veículos Ociosos
+        </button>
       </div>
 
-      <div class="pagination-wrapper" *ngIf="totalPagesUtilization > 1 || totalItemsUtilization > 5">
-        <div class="pagination-left">
-          <label>Itens por página:</label>
-          <select class="page-size-select" [(ngModel)]="itemsPerPageUtilization" (change)="onPageSizeChangeUtilization($event)">
-            <option *ngFor="let size of pageSizeOptionsUtilization" [value]="size">{{ size }}</option>
-          </select>
-        </div>
-        
-        <div class="pagination-center">
-          <button 
-            class="pagination-btn" 
-            (click)="changePageUtilization(1)"
-            [disabled]="currentPageUtilization === 1">
-            <i class="fas fa-angle-double-left"></i>
-          </button>
-          
-          <button 
-            class="pagination-btn" 
-            (click)="changePageUtilization(currentPageUtilization - 1)"
-            [disabled]="currentPageUtilization === 1">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          
-          <button 
-            *ngFor="let page of pagesUtilization"
-            class="pagination-btn"
-            [class.active]="page === currentPageUtilization"
-            (click)="changePageUtilization(page)">
-            {{ page }}
-          </button>
-          
-          <button 
-            class="pagination-btn"
-            (click)="changePageUtilization(currentPageUtilization + 1)"
-            [disabled]="currentPageUtilization === totalPagesUtilization">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-          
-          <button 
-            class="pagination-btn"
-            (click)="changePageUtilization(totalPagesUtilization)"
-            [disabled]="currentPageUtilization === totalPagesUtilization">
-            <i class="fas fa-angle-double-right"></i>
-          </button>
-        </div>
-        
-        <div class="pagination-right">
-          Página {{ currentPageUtilization }} de {{ totalPagesUtilization }} ({{ totalItemsUtilization }} itens)
-        </div>
-      </div>
-    </div>
+      <!-- Tab: Utilização por Veículo -->
+      <div class="tab-content" *ngIf="activeTab === 'utilization'">
+        <div class="section">
+          <div class="section-header">
+            <h2><i class="fas fa-chart-pie"></i> Utilização por Veículo</h2>
+            <span class="record-count">Mostrando {{ paginatedUtilization.length }} de {{ totalItemsUtilization }} veículos</span>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Placa</th>
+                  <th>Marca/Modelo</th>
+                  <th>Viagens</th>
+                  <th>KM Total</th>
+                  <th>Dias em Uso</th>
+                  <th>Dias Parado</th>
+                  <th>Taxa Utilização</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let vehicle of paginatedUtilization">
+                  <td><strong>{{ vehicle.licensePlate }}</strong></td>
+                  <td>{{ vehicle.brand }} {{ vehicle.model }}</td>
+                  <td>{{ vehicle.totalTrips }}</td>
+                  <td>{{ vehicle.totalKm | number }}</td>
+                  <td>{{ vehicle.daysInUse }}</td>
+                  <td>{{ vehicle.daysIdle }}</td>
+                  <td>{{ vehicle.utilizationRate | number:'1.1-1' }}%</td>
+                  <td>
+                    <span class="badge" [ngClass]="getStatusClass(vehicle.utilizationStatus)">
+                      {{ vehicle.utilizationStatus }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-    <!-- Veículos Ociosos -->
-    <div class="section" *ngIf="report.idleVehiclesList.length > 0">
-      <div class="section-header">
-        <h2><i class="fas fa-exclamation-triangle"></i> Veículos Ociosos (Mais de 30 dias parados)</h2>
-        <span class="record-count">Mostrando {{ paginatedIdle.length }} de {{ totalItemsIdle }} veículos</span>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Placa</th>
-              <th>Marca/Modelo</th>
-              <th>Dias Parado</th>
-              <th>Última Viagem</th>
-              <th>Sugestão</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let vehicle of paginatedIdle">
-              <td><strong>{{ vehicle.licensePlate }}</strong></td>
-              <td>{{ vehicle.brand }} {{ vehicle.model }}</td>
-              <td>{{ vehicle.daysIdle }} dias</td>
-              <td>{{ vehicle.lastTripDate || 'Nunca' }}</td>
-              <td>
-                <span class="badge badge-warning">{{ vehicle.suggestion }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <div class="pagination-wrapper" *ngIf="totalPagesUtilization > 1 || totalItemsUtilization > 5">
+            <div class="pagination-left">
+              <label>Itens por página:</label>
+              <select class="page-size-select" [(ngModel)]="itemsPerPageUtilization" (change)="onPageSizeChangeUtilization($event)">
+                <option *ngFor="let size of pageSizeOptionsUtilization" [value]="size">{{ size }}</option>
+              </select>
+            </div>
+            
+            <div class="pagination-center">
+              <button 
+                class="pagination-btn" 
+                (click)="changePageUtilization(1)"
+                [disabled]="currentPageUtilization === 1">
+                <i class="fas fa-angle-double-left"></i>
+              </button>
+              
+              <button 
+                class="pagination-btn" 
+                (click)="changePageUtilization(currentPageUtilization - 1)"
+                [disabled]="currentPageUtilization === 1">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              
+              <button 
+                *ngFor="let page of pagesUtilization"
+                class="pagination-btn"
+                [class.active]="page === currentPageUtilization"
+                (click)="changePageUtilization(page)">
+                {{ page }}
+              </button>
+              
+              <button 
+                class="pagination-btn"
+                (click)="changePageUtilization(currentPageUtilization + 1)"
+                [disabled]="currentPageUtilization === totalPagesUtilization">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              
+              <button 
+                class="pagination-btn"
+                (click)="changePageUtilization(totalPagesUtilization)"
+                [disabled]="currentPageUtilization === totalPagesUtilization">
+                <i class="fas fa-angle-double-right"></i>
+              </button>
+            </div>
+            
+            <div class="pagination-right">
+              Página {{ currentPageUtilization }} de {{ totalPagesUtilization }} ({{ totalItemsUtilization }} itens)
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="pagination-wrapper" *ngIf="totalPagesIdle > 1 || totalItemsIdle > 5">
-        <div class="pagination-left">
-          <label>Itens por página:</label>
-          <select class="page-size-select" [(ngModel)]="itemsPerPageIdle" (change)="onPageSizeChangeIdle($event)">
-            <option *ngFor="let size of pageSizeOptionsIdle" [value]="size">{{ size }}</option>
-          </select>
-        </div>
-        
-        <div class="pagination-center">
-          <button 
-            class="pagination-btn" 
-            (click)="changePageIdle(1)"
-            [disabled]="currentPageIdle === 1">
-            <i class="fas fa-angle-double-left"></i>
-          </button>
-          
-          <button 
-            class="pagination-btn" 
-            (click)="changePageIdle(currentPageIdle - 1)"
-            [disabled]="currentPageIdle === 1">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          
-          <button 
-            *ngFor="let page of pagesIdle"
-            class="pagination-btn"
-            [class.active]="page === currentPageIdle"
-            (click)="changePageIdle(page)">
-            {{ page }}
-          </button>
-          
-          <button 
-            class="pagination-btn"
-            (click)="changePageIdle(currentPageIdle + 1)"
-            [disabled]="currentPageIdle === totalPagesIdle">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-          
-          <button 
-            class="pagination-btn"
-            (click)="changePageIdle(totalPagesIdle)"
-            [disabled]="currentPageIdle === totalPagesIdle">
-            <i class="fas fa-angle-double-right"></i>
-          </button>
-        </div>
-        
-        <div class="pagination-right">
-          Página {{ currentPageIdle }} de {{ totalPagesIdle }} ({{ totalItemsIdle }} itens)
+      <!-- Tab: Veículos Ociosos -->
+      <div class="tab-content" *ngIf="activeTab === 'idle' && report.idleVehiclesList.length > 0">
+        <div class="section">
+          <div class="section-header">
+            <h2><i class="fas fa-exclamation-triangle"></i> Veículos Ociosos (Mais de 30 dias parados)</h2>
+            <span class="record-count">Mostrando {{ paginatedIdle.length }} de {{ totalItemsIdle }} veículos</span>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Placa</th>
+                  <th>Marca/Modelo</th>
+                  <th>Dias Parado</th>
+                  <th>Última Viagem</th>
+                  <th>Sugestão</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let vehicle of paginatedIdle">
+                  <td><strong>{{ vehicle.licensePlate }}</strong></td>
+                  <td>{{ vehicle.brand }} {{ vehicle.model }}</td>
+                  <td>{{ vehicle.daysIdle }} dias</td>
+                  <td>{{ vehicle.lastTripDate || 'Nunca' }}</td>
+                  <td>
+                    <span class="badge badge-warning">{{ vehicle.suggestion }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination-wrapper" *ngIf="totalPagesIdle > 1 || totalItemsIdle > 5">
+            <div class="pagination-left">
+              <label>Itens por página:</label>
+              <select class="page-size-select" [(ngModel)]="itemsPerPageIdle" (change)="onPageSizeChangeIdle($event)">
+                <option *ngFor="let size of pageSizeOptionsIdle" [value]="size">{{ size }}</option>
+              </select>
+            </div>
+            
+            <div class="pagination-center">
+              <button 
+                class="pagination-btn" 
+                (click)="changePageIdle(1)"
+                [disabled]="currentPageIdle === 1">
+                <i class="fas fa-angle-double-left"></i>
+              </button>
+              
+              <button 
+                class="pagination-btn" 
+                (click)="changePageIdle(currentPageIdle - 1)"
+                [disabled]="currentPageIdle === 1">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              
+              <button 
+                *ngFor="let page of pagesIdle"
+                class="pagination-btn"
+                [class.active]="page === currentPageIdle"
+                (click)="changePageIdle(page)">
+                {{ page }}
+              </button>
+              
+              <button 
+                class="pagination-btn"
+                (click)="changePageIdle(currentPageIdle + 1)"
+                [disabled]="currentPageIdle === totalPagesIdle">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              
+              <button 
+                class="pagination-btn"
+                (click)="changePageIdle(totalPagesIdle)"
+                [disabled]="currentPageIdle === totalPagesIdle">
+                <i class="fas fa-angle-double-right"></i>
+              </button>
+            </div>
+            
+            <div class="pagination-right">
+              Página {{ currentPageIdle }} de {{ totalPagesIdle }} ({{ totalItemsIdle }} itens)
+            </div>
+          </div>
         </div>
       </div>
     </div>

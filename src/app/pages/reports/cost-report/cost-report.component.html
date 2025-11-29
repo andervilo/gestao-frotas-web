@@ -65,164 +65,186 @@
       </div>
     </div>
 
-    <!-- Tabela de Custos por Veículo -->
-    <div class="section">
-      <div class="section-header">
-        <h2><i class="fas fa-car"></i> Custos por Veículo</h2>
-        <span class="record-count">Mostrando {{ paginatedVehicles.length }} de {{ totalItemsVehicles }} veículos</span>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Placa</th>
-              <th>Marca</th>
-              <th>Modelo</th>
-              <th>Custo Total</th>
-              <th>Custo Manutenção</th>
-              <th>KM Total</th>
-              <th>Custo/KM</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let vehicle of paginatedVehicles">
-              <td><strong>{{ vehicle.licensePlate }}</strong></td>
-              <td>{{ vehicle.brand }}</td>
-              <td>{{ vehicle.model }}</td>
-              <td>R$ {{ vehicle.totalCost | number:'1.2-2' }}</td>
-              <td>R$ {{ vehicle.maintenanceCost | number:'1.2-2' }}</td>
-              <td>{{ vehicle.totalKm | number }}</td>
-              <td>R$ {{ vehicle.costPerKm | number:'1.4-4' }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <!-- Tabs Container -->
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'vehicles'"
+          (click)="activeTab = 'vehicles'">
+          <i class="fas fa-car"></i> Custos por Veículo
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'monthly'"
+          (click)="activeTab = 'monthly'">
+          <i class="fas fa-calendar-alt"></i> Evolução Mensal
+        </button>
       </div>
 
-      <div class="pagination-wrapper" *ngIf="totalPagesVehicles > 1 || totalItemsVehicles > 5">
-        <div class="pagination-left">
-          <label>Itens por página:</label>
-          <select class="page-size-select" [(ngModel)]="itemsPerPageVehicles" (change)="onPageSizeChangeVehicles($event)">
-            <option *ngFor="let size of pageSizeOptionsVehicles" [value]="size">{{ size }}</option>
-          </select>
-        </div>
-        
-        <div class="pagination-center">
-          <button 
-            class="pagination-btn" 
-            (click)="changePageVehicles(1)"
-            [disabled]="currentPageVehicles === 1">
-            <i class="fas fa-angle-double-left"></i>
-          </button>
-          
-          <button 
-            class="pagination-btn" 
-            (click)="changePageVehicles(currentPageVehicles - 1)"
-            [disabled]="currentPageVehicles === 1">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          
-          <button 
-            *ngFor="let page of pagesVehicles"
-            class="pagination-btn"
-            [class.active]="page === currentPageVehicles"
-            (click)="changePageVehicles(page)">
-            {{ page }}
-          </button>
-          
-          <button 
-            class="pagination-btn"
-            (click)="changePageVehicles(currentPageVehicles + 1)"
-            [disabled]="currentPageVehicles === totalPagesVehicles">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-          
-          <button 
-            class="pagination-btn"
-            (click)="changePageVehicles(totalPagesVehicles)"
-            [disabled]="currentPageVehicles === totalPagesVehicles">
-            <i class="fas fa-angle-double-right"></i>
-          </button>
-        </div>
-        
-        <div class="pagination-right">
-          Página {{ currentPageVehicles }} de {{ totalPagesVehicles }} ({{ totalItemsVehicles }} itens)
-        </div>
-      </div>
-    </div>
+      <!-- Tab: Custos por Veículo -->
+      <div class="tab-content" *ngIf="activeTab === 'vehicles'">
+        <div class="section">
+          <div class="section-header">
+            <h2><i class="fas fa-car"></i> Custos por Veículo</h2>
+            <span class="record-count">Mostrando {{ paginatedVehicles.length }} de {{ totalItemsVehicles }} veículos</span>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Placa</th>
+                  <th>Marca</th>
+                  <th>Modelo</th>
+                  <th>Custo Total</th>
+                  <th>Custo Manutenção</th>
+                  <th>KM Total</th>
+                  <th>Custo/KM</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let vehicle of paginatedVehicles">
+                  <td><strong>{{ vehicle.licensePlate }}</strong></td>
+                  <td>{{ vehicle.brand }}</td>
+                  <td>{{ vehicle.model }}</td>
+                  <td>R$ {{ vehicle.totalCost | number:'1.2-2' }}</td>
+                  <td>R$ {{ vehicle.maintenanceCost | number:'1.2-2' }}</td>
+                  <td>{{ vehicle.totalKm | number }}</td>
+                  <td>R$ {{ vehicle.costPerKm | number:'1.4-4' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-    <!-- Custos Mensais -->
-    <div class="section">
-      <div class="section-header">
-        <h2><i class="fas fa-calendar-alt"></i> Evolução Mensal de Custos</h2>
-        <span class="record-count">Mostrando {{ paginatedMonthly.length }} de {{ totalItemsMonthly }} meses</span>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Mês</th>
-              <th>Custo Total</th>
-              <th>Custo Manutenção</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let monthly of paginatedMonthly">
-              <td><strong>{{ monthly.month }}</strong></td>
-              <td>R$ {{ monthly.totalCost | number:'1.2-2' }}</td>
-              <td>R$ {{ monthly.maintenanceCost | number:'1.2-2' }}</td>
-            </tr>
-          </tbody>
-        </table>
+          <div class="pagination-wrapper" *ngIf="totalPagesVehicles > 1 || totalItemsVehicles > 5">
+            <div class="pagination-left">
+              <label>Itens por página:</label>
+              <select class="page-size-select" [(ngModel)]="itemsPerPageVehicles" (change)="onPageSizeChangeVehicles($event)">
+                <option *ngFor="let size of pageSizeOptionsVehicles" [value]="size">{{ size }}</option>
+              </select>
+            </div>
+            
+            <div class="pagination-center">
+              <button 
+                class="pagination-btn" 
+                (click)="changePageVehicles(1)"
+                [disabled]="currentPageVehicles === 1">
+                <i class="fas fa-angle-double-left"></i>
+              </button>
+              
+              <button 
+                class="pagination-btn" 
+                (click)="changePageVehicles(currentPageVehicles - 1)"
+                [disabled]="currentPageVehicles === 1">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              
+              <button 
+                *ngFor="let page of pagesVehicles"
+                class="pagination-btn"
+                [class.active]="page === currentPageVehicles"
+                (click)="changePageVehicles(page)">
+                {{ page }}
+              </button>
+              
+              <button 
+                class="pagination-btn"
+                (click)="changePageVehicles(currentPageVehicles + 1)"
+                [disabled]="currentPageVehicles === totalPagesVehicles">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              
+              <button 
+                class="pagination-btn"
+                (click)="changePageVehicles(totalPagesVehicles)"
+                [disabled]="currentPageVehicles === totalPagesVehicles">
+                <i class="fas fa-angle-double-right"></i>
+              </button>
+            </div>
+            
+            <div class="pagination-right">
+              Página {{ currentPageVehicles }} de {{ totalPagesVehicles }} ({{ totalItemsVehicles }} itens)
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="pagination-wrapper" *ngIf="totalPagesMonthly > 1 || totalItemsMonthly > 5">
-        <div class="pagination-left">
-          <label>Itens por página:</label>
-          <select class="page-size-select" [(ngModel)]="itemsPerPageMonthly" (change)="onPageSizeChangeMonthly($event)">
-            <option *ngFor="let size of pageSizeOptionsMonthly" [value]="size">{{ size }}</option>
-          </select>
-        </div>
-        
-        <div class="pagination-center">
-          <button 
-            class="pagination-btn" 
-            (click)="changePageMonthly(1)"
-            [disabled]="currentPageMonthly === 1">
-            <i class="fas fa-angle-double-left"></i>
-          </button>
-          
-          <button 
-            class="pagination-btn" 
-            (click)="changePageMonthly(currentPageMonthly - 1)"
-            [disabled]="currentPageMonthly === 1">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          
-          <button 
-            *ngFor="let page of pagesMonthly"
-            class="pagination-btn"
-            [class.active]="page === currentPageMonthly"
-            (click)="changePageMonthly(page)">
-            {{ page }}
-          </button>
-          
-          <button 
-            class="pagination-btn"
-            (click)="changePageMonthly(currentPageMonthly + 1)"
-            [disabled]="currentPageMonthly === totalPagesMonthly">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-          
-          <button 
-            class="pagination-btn"
-            (click)="changePageMonthly(totalPagesMonthly)"
-            [disabled]="currentPageMonthly === totalPagesMonthly">
-            <i class="fas fa-angle-double-right"></i>
-          </button>
-        </div>
-        
-        <div class="pagination-right">
-          Página {{ currentPageMonthly }} de {{ totalPagesMonthly }} ({{ totalItemsMonthly }} itens)
+      <!-- Tab: Evolução Mensal -->
+      <div class="tab-content" *ngIf="activeTab === 'monthly'">
+        <div class="section">
+          <div class="section-header">
+            <h2><i class="fas fa-calendar-alt"></i> Evolução Mensal de Custos</h2>
+            <span class="record-count">Mostrando {{ paginatedMonthly.length }} de {{ totalItemsMonthly }} meses</span>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mês</th>
+                  <th>Custo Total</th>
+                  <th>Custo Manutenção</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let monthly of paginatedMonthly">
+                  <td><strong>{{ monthly.month }}</strong></td>
+                  <td>R$ {{ monthly.totalCost | number:'1.2-2' }}</td>
+                  <td>R$ {{ monthly.maintenanceCost | number:'1.2-2' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination-wrapper" *ngIf="totalPagesMonthly > 1 || totalItemsMonthly > 5">
+            <div class="pagination-left">
+              <label>Itens por página:</label>
+              <select class="page-size-select" [(ngModel)]="itemsPerPageMonthly" (change)="onPageSizeChangeMonthly($event)">
+                <option *ngFor="let size of pageSizeOptionsMonthly" [value]="size">{{ size }}</option>
+              </select>
+            </div>
+            
+            <div class="pagination-center">
+              <button 
+                class="pagination-btn" 
+                (click)="changePageMonthly(1)"
+                [disabled]="currentPageMonthly === 1">
+                <i class="fas fa-angle-double-left"></i>
+              </button>
+              
+              <button 
+                class="pagination-btn" 
+                (click)="changePageMonthly(currentPageMonthly - 1)"
+                [disabled]="currentPageMonthly === 1">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              
+              <button 
+                *ngFor="let page of pagesMonthly"
+                class="pagination-btn"
+                [class.active]="page === currentPageMonthly"
+                (click)="changePageMonthly(page)">
+                {{ page }}
+              </button>
+              
+              <button 
+                class="pagination-btn"
+                (click)="changePageMonthly(currentPageMonthly + 1)"
+                [disabled]="currentPageMonthly === totalPagesMonthly">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              
+              <button 
+                class="pagination-btn"
+                (click)="changePageMonthly(totalPagesMonthly)"
+                [disabled]="currentPageMonthly === totalPagesMonthly">
+                <i class="fas fa-angle-double-right"></i>
+              </button>
+            </div>
+            
+            <div class="pagination-right">
+              Página {{ currentPageMonthly }} de {{ totalPagesMonthly }} ({{ totalItemsMonthly }} itens)
+            </div>
+          </div>
         </div>
       </div>
     </div>

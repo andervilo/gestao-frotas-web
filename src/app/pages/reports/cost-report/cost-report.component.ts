@@ -19,6 +19,9 @@ export class CostReportComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
+  // Tabs
+  activeTab: 'vehicles' | 'monthly' = 'vehicles';
+
   // Pagination for vehicle costs
   currentPageVehicles = 1;
   itemsPerPageVehicles = 5;
